@@ -1,0 +1,1 @@
+java -jar %JAVA_HOME%\bin\sikulixide-2.0.5-win.jar
