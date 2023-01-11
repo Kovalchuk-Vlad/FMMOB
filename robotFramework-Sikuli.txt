@@ -1,0 +1,13 @@
+JPype1==1.4.1
+numpy==1.23.5
+packaging==21.3
+Pillow==9.3.0
+py4j==0.10.9.7
+Pygments==2.13.0
+pyparsing==3.0.9
+Pypubsub==4.0.3
+pywin32==305
+robotframework==6.0.1
+robotframework-sikulixlibrary==1.2.2
+six==1.16.0
+wxPython==4.2.1a1.dev5539+906adf71
