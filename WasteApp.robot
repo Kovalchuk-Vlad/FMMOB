@@ -57,10 +57,30 @@ ${WLHaudY}        540
 ${disposalX}      150
 ${confirmAuditingX}    -150
 ${confirmAuditingY}    680
+${inspectionMarkX}    -70
+${inspectionMarkY}    0
+${nextPageX}      0
+${nextPageY}      -570
+${DLVselectCartX}    50
+${DLVselectCartY}    690
+${DLVabelFirstCartX}    0
+${DLVabelFirstCartY}    80
+${DLVfirstCartX}    0
+${DLVfirstCartY}    500
+${DLVarriveAtCustomerX}    -300
+${DLVarriveAtCustomerY}    450
+${DLVstartServiceX}    -155
+${DLVstartServiceY}    450
+${DLVendServiceX}    -155
+${DLVendServiceY}    620
+${DLVdepartFromCustomerX}    -300
+${DLVdepartFromCustomerY}    620
 ${old-completedX}    -250
 ${old-completedY}    680
 ${WFH_completedX}    -190
 ${WFH_completedY}    540
+${CartManualConfirmX}    40
+${CartManualConfirmY}    80
 @{menuActivities}    menuGateCrossing    menuBreak    menuMeal    menuWaiting    menuMechanicalInspection    menuRefueling    menuBreakdown    menuGarage    menuYardWork    menuContainerDropOff    menuAdministrative
 @{exMX}           -200    0    -200    0    -200    0    -200
 @{exMY}           350    350    450    450    520    520    610
@@ -69,6 +89,7 @@ ${WFH_completedY}    540
 WAworkflow
     StartRoute
     selectCalls
+    selectSequenceList
     selectManualConfirm
     ExecuteStops
 
@@ -99,10 +120,10 @@ ReadMesage
     selectReadMessage
     ReadMessages
 
-SendMesage
+SendMessage
     StartRoute
     selectSendMessage
-    SendMessage
+    SendMessageScreen
 
 NotOut
     StartRoute
@@ -117,13 +138,17 @@ ZcloseRoute
 tmpTest
     argTest
 
+ReadMesageRoutLess
+    LogonDriver
+    clickEnvelope
+    ReadMessages
+    FinishMainMenu
+
 *** Keywords ***
 argTest
-    ${TMP}    Get Length    ${exMX}
+    Click    signatureStart
+    Drag And Drop    signatureStart    signatureEnd
     Log    Test
-    FOR    ${I}    IN RANGE    ${TMP}
-        Log Many    I    ${I}    X    ${exMX}[${I}]    Y    ${exMY}[${I}]
-    END
 
 StartRoute
     LogonDriver
@@ -155,7 +180,6 @@ LogonDriver
         ${existsbuttonBack}    Exists    buttonBack    ${wait5}
         IF    ${existsbuttonBack}
             Click    buttonBack
-            BREAK
         END
         ${existsbuttonLogon}    Exists    buttonLogon    ${wait5}
         IF    ${existsbuttonLogon}
@@ -183,15 +207,18 @@ selectSendMessage
         Wait For Image    buttonSendMessage    \    ${LoadTime}
         Click    buttonSendMessage
 
-SendMessage
-        Log    SendMessage
+SendMessageScreen
+        Log    SendMessageScreen
         Wait For Image    headerSendMessage    \    ${LoadTime}
         Click    Cart    ${messageNoteX}    ${messageNoteY}
         Press Special Key    DOWN
-        Double Click    buttonSendMessage
+        Click    headerSendMessage
+        Click    buttonSendMessage
 
 ReadMessages
         Log    ${EOM}
+        Click    buttonPrevious
+        Click    buttonNext
         WHILE    ${EOM}    limit=99
             ${EOM}    Exists    bodyMessage    ${wait5}
             Log    ${EOM}
@@ -210,30 +237,74 @@ selectCalls
         Click    buttonCalls
 
 selectManualConfirm
-    #Wait For Image    buttonBack    \    ${wait15}
         Wait For Image    Cart    \    ${wait15}
         Click    Cart    40    80
 
 StopsExtra
-        WHILE    True
+    WHILE    True
         ${countExtra}    Evaluate    ${countExtra}+1
         ${countExtra}    Evaluate    ${countExtra} % 10
         IF    ${countExtra}==0
             ${countExtra}    Set Variable    1
         END
-            ${existstagWeightKG}    Exists    tagWeightKG    ${wait5}
-            ${existslabelSIZEselected}    Exists    labelSIZEselected    ${wait5}
-            IF    ${existstagWeightKG}==True
-                clickExtra    ${countExtra}
-                CONTINUE
+        ${existstagWeightKG}    Exists    tagWeightKG    ${wait5}
+        ${existslabelSIZEselected}    Exists    labelSIZEselected    ${wait5}
+        ${existbuttonExceptionSelect}    Exists    buttonExceptionSelect    ${wait5}
+        IF    ${existbuttonExceptionSelect}
+            Log    buttonExceptionSelect
+            Click    buttonExceptionSelect
+    #
+            ${existsbuttonAuditException}    Exists    buttonAuditException    ${wait5}
+            IF    ${existsbuttonAuditException}
+    # provide W-L-H
+                ${exI}    Evaluate    9
+                Click    Cart    ${WaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${LaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${HaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    buttonAuditException
             END
-            IF    ${existslabelSIZEselected}==True
-                clickExtra    ${countExtra}
-                CONTINUE
-            END
-            BREAK
+    #
+            clickExtra    ${countExtra}
+            CONTINUE
         END
-        Click    buttonBack
+        IF    ${existstagWeightKG}
+            clickExtra    ${countExtra}
+            CONTINUE
+        END
+        IF    ${existslabelSIZEselected}
+            clickExtra    ${countExtra}
+            CONTINUE
+        END
+        ${existsbuttonExceptionSelect}    Exists    buttonExceptionSelect    ${wait5}
+        IF    ${existsbuttonExceptionSelect}
+            Click    buttonExceptionSelect
+            ${existsbuttonAuditException}    Exists    buttonAuditException    ${wait5}
+            IF    ${existsbuttonAuditException}
+    # provide W-L-H
+                ${exI}    Evaluate    6
+                Click    Cart    ${WaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${LaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${HaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    buttonAuditException
+            END
+            clickExtra    ${countExtra}
+            CONTINUE
+        END
+        BREAK
+    END
+    Click    buttonBack
 
 clickExtra
         [Arguments]    ${countExtra}
@@ -280,14 +351,15 @@ StopsException
                 Click    Cart    ${completedX}    ${completedY}
                 Wait For Image    headerAuditingYellowOnBlue    \    ${wait20}
     # provide W-L-H
+                ${tmp}    Evaluate    1
                 Click    Cart    ${WaudX}    ${WLHaudY}
-                clickKbd    ${exI}
+                clickKbd    ${tmp}
                 Click    buttonKbdDone
                 Click    Cart    ${LaudX}    ${WLHaudY}
-                clickKbd    ${exI}
+                clickKbd    ${tmp}
                 Click    buttonKbdDone
                 Click    Cart    ${HaudX}    ${WLHaudY}
-                clickKbd    ${exI}
+                clickKbd    ${tmp}
                 Click    buttonKbdDone
                 Click    Cart    ${exceptionAUDX}    ${exceptionAUDY}
                 Wait For Image    buttonExceptionCallNote    \    ${wait20}
@@ -301,7 +373,31 @@ StopsException
 
 clickException
     [Arguments]    ${exceptionTmpX}    ${exceptionTmpY}
-        Click    Cart    ${exceptionX}    ${exceptionY}
+    Log    clickException
+        ${existsbuttonException}    Exists    buttonException    ${wait5}
+        ${existsbuttonExceptionSelect}    Exists    buttonExceptionSelect    ${wait5}
+        IF    ${existsbuttonException}
+            Click    buttonException
+        ELSE IF    ${existsbuttonExceptionSelect}
+            Click    buttonExceptionSelect
+            ${existsbuttonAuditException}    Exists    buttonAuditException    ${wait5}
+            IF    ${existsbuttonAuditException}
+    # provide W-L-H
+                ${exI}    Evaluate    6
+                Click    Cart    ${WaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${LaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${HaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    buttonAuditException
+            END
+        END
+    #Click    Cart    ${exceptionX}    ${exceptionY}
+        ${existsbuttonExceptionCallNote}    Exists    buttonExceptionCallNote    ${wait5}
         Wait For Image    buttonExceptionCallNote    \    ${wait15}
         Click    Cart    ${exceptionTmpX}    ${exceptionTmpY}
         WHILE    True
@@ -335,42 +431,67 @@ clickNotOut
         Click    Cart    ${notOutX}    ${notOutY}
         selectManualConfirm
 
-TBD-last-ExecuteStops
-        WHILE    True
-            ${existstagWeightKG}    Exists    tagWeightKG    ${wait5}
-            IF    ${existstagWeightKG}==True
-                Log    Weight
-                Click    tagWeightKG
-                Wait For Image    buttonKbdDone    \    ${wait15}
-                Click    buttonKbd1
-                Click    buttonKbdDone
-                clickExecuteWeight
-                CONTINUE
-            END
-    #
-            ${existslabelSIZEselected}    Exists    labelSIZEselected    ${wait5}
-            IF    ${existslabelSIZEselected}==True
-                Log    LabelSize
-                clickExecute
-                CONTINUE
-            END
-    #
-            ${existsheaderCallsWhite}    Exists    headerCallsWhite    ${wait5}
-            IF    ${existsheaderCallsWhite}==True
-                Log    HeaderCallsWhite
-                clickExecute
-                CONTINUE
-            END
-    #
-            Log    BREAK
-            BREAK
-        END
-        Log    ClickButtonBACK
-        Click    buttonBack
-
 ExecuteStops
         WHILE    True
-    #
+    #Click    Cart    ${CartManualConfirmX}    ${CartManualConfirmY}
+            selectManualConfirm
+            Wait For Image    headerCallsWhite    \    ${wait5}
+            ${existslabelSIZESelected}    Exists    labelSIZESelected    ${wait5}
+            IF    ${existslabelSIZESelected}
+                No Operation
+            ELSE
+                BREAK
+            END
+            ${existsbuttonBack}    Exists    buttonBack    ${wait5}
+            IF    ${existsbuttonBack}
+                Click    buttonBack    100    0    #Click right of button Back
+    # size 2 stop > need provide weght
+            ${existstagWeightKG}    Exists    tagWeightKG    ${wait10}
+                IF    ${existstagWeightKG}
+                    Log    WeightKG
+                    ${counterStops}    Evaluate    ${counterStops}+1
+                    ${kbdTMP}    Evaluate    ${counterStops} % 10
+                    Log Many    ${counterStops}    ${kbdTMP}    tagWeightKG
+                    Click    tagWeightKG
+                    clickKbd    ${kbdTMP}
+                    Click    buttonKbdDone
+                    clickExecute
+                    CONTINUE
+                END
+    # header black Calls
+    # label Weight > provide KG, check for headeCallsblack and no button Back
+    #click completed; wait for calls white
+    # AUD type stop \ whl and e.t.c
+                    ${existsheaderAuditingYellowOnBlue}    Exists    headerAuditingYellowOnBlue    ${wait5}
+                IF    ${existsheaderAuditingYellowOnBlue}==True
+                    Log    AUDit
+                    clickExecuteAUD
+                    CONTINUE
+                END
+    # DLR carts
+    # regular stop size 96> continue, last stop to check; nothing to do
+                CONTINUE
+            ELSE
+                BREAK
+            END
+        END
+        Click    buttonBack
+
+prowideAUDwlh
+    # provide W-L-H
+                ${exI}    Evaluate    7
+                Click    Cart    ${WaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${LaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${HaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+
+tmpTMP
+        WHILE    True
             ${existsheaderAuditingYellowOnBlue}    Exists    headerAuditingYellowOnBlue    ${wait5}
             IF    ${existsheaderAuditingYellowOnBlue}==True
                 Log    AUDit
@@ -378,11 +499,18 @@ ExecuteStops
                 CONTINUE
             END
     #
-            ${existstagWeightKG}    Exists    tagWeightKG    ${wait5}
-            IF    ${existstagWeightKG}==True
+            ${existsheaderDeliveryYellow}    Exists    headerDeliveryYellow    ${wait5}
+            IF    ${existsheaderDeliveryYellow}
+                Log    Delivery
+                clickExecuteDLV
+                CONTINUE
+            END
+    #
+            ${existstagWeightKG}    Exists    tagWeightKG    ${wait15}
+            IF    ${existstagWeightKG}
                 ${counterStops}    Evaluate    ${counterStops}+1
                 ${kbdTMP}    Evaluate    ${counterStops} % 10
-                Log Many    ${counterStops}    ${kbdTMP}
+                Log Many    ${counterStops}    ${kbdTMP}    tagWeightKG
                 Click    tagWeightKG
                 clickKbd    ${kbdTMP}
                 Click    buttonKbdDone
@@ -391,14 +519,13 @@ ExecuteStops
             END
     #
             ${existslabelSIZEselected}    Exists    labelSIZEselected    ${wait5}
-            IF    ${existslabelSIZEselected}==True
+            IF    ${existslabelSIZEselected}
+                Click    buttonManualVideo
+                Click    buttonManualPhoto
                 clickExecute
                 CONTINUE
             END
-    #
-            BREAK
         END
-        Click    buttonBack
 
 clickKbd
         [Arguments]    ${kbdTMP}
@@ -435,9 +562,8 @@ NoWeight-works-ExecuteStops
         Click    buttonBack
 
 clickExecuteAUD
-        Click    Cart    ${completedX}    ${completedY}
-        Sleep    ${one}
-        Click    Cart    ${confirmAuditingX}    ${confirmAuditingY}
+        prowideAUDwlh
+        Click    buttonAUDconfirm
         selectManualConfirm
 
 clickExecute
@@ -479,181 +605,196 @@ closeWA
         Wait For Image    buttonBlueYes    \    ${wait15}
         Click    buttonBlueYes
         ${existsshortcutCloseWA10}    Exists    shortcutCloseWA10    ${wait10}
-        ${existsshortcutCloseWA7}    Exists    shortcutCloseWA7    ${wait10}
         IF    ${existsshortcutCloseWA10}
             Double Click    shortcutCloseWA10
-        ELSE
+        END
+        ${existsshortcutCloseWA7}    Exists    shortcutCloseWA7    ${wait10}
+        IF    ${existsshortcutCloseWA7}
             Double Click    shortcutCloseWA7
         END
 
 selectActivities
-        Wait For Image    buttonActivities    \    ${wait10}
-        Click    buttonActivities
+    WHILE    True
+        ${existsbuttonActivities}    Exists    buttonActivities    ${wait5}
+        IF    ${existsbuttonActivities}
+            BREAK
+        END
+    END
+    Click    buttonActivities
 
 ExecuteActivities
-        Log    ExecuteActivities
-        Click    @{menuActivities}[2:3]
-        ${menuLength}    Get Length    ${menuActivities}
-        Log    ${menuLength}
-        FOR    ${I}    IN    @{menuActivities}
-            ${menuLength}    Evaluate    ${menuLength}-1
-            Log Many    ${menuLength}    ${I}
-            Sleep    ${wait5}
-            Click    ${I}
-            Click    buttonSelect
-            Comment    Gate Crossing Do Not need buttonActivityEnd
-            ${existsbuttonActivities}    Exists    buttonActivities    ${wait5}
-            IF    ${existsbuttonActivities}
-                Log    Gate Crossing
-                selectActivities
-                CONTINUE
-            END
-    #
-            ${existsButtonActivityEnd}    Exists    buttonActivityEnd    ${wait5}
-            IF    ${existsButtonActivityEnd}
-                Click    buttonActivityEnd
-                IF    ${menuLength}==0
-                    BREAK
-                END
-                selectActivities
-                CONTINUE
-            END
-    #
-            ${existsButtonBack}    Exists    buttonBack    ${wait5}
-            IF    ${existsButtonBack}
-                Click    buttonBack
-                selectActivities
-                CONTINUE
-            END
-    #
+    Log    ExecuteActivities
+    Click    @{menuActivities}[2:3]
+    ${menuLength}    Get Length    ${menuActivities}
+    FOR    ${I}    IN    @{menuActivities}
+        ${menuLength}    Evaluate    ${menuLength}-1
+        Click    ${I}
+        Click    buttonSelect
+        Comment    Gate Crossing Do Not need buttonActivityEnd
+        ${existsbuttonActivities}    Exists    buttonActivities    ${wait5}
+        IF    ${existsbuttonActivities}
+            Log    Gate Crossing
+            selectActivities
+            CONTINUE
+        END
+        ${existsButtonActivityEnd}    Exists    buttonActivityEnd    ${wait5}
+        IF    ${existsButtonActivityEnd}
+            Click    buttonActivityEnd
             IF    ${menuLength}==0
                 BREAK
             END
-    #selectActivities
+            selectActivities
+            CONTINUE
         END
-    #
-
-TMP-activities
-            ${existsButtonBack}    Exists    buttonBack    ${wait5}
-            ${existsbuttonSelect}    Exists    buttonSelect    ${wait5}
-            IF    ${existsButtonBack}
-                Comment    Inspection History Screen Maybe
-                Click    buttonBack
+        ${existsheaderInspectionHistory}    Exists    headerInspectionHistory    ${wait5}
+        IF    ${existsheaderInspectionHistory}
+            MechanicalInspection
+            WHILE    True    limit=6
+                ${existsheaderInspectionHistory}    Exists    headerInspectionHistory    ${wait5}
+                IF    ${existsheaderInspectionHistory}
+                    Click    buttonBack
+                    BREAK
+                END
             END
-
-DEBUG-09jan-ExecuteActivities
-        Log    ExecuteActivities
-        Click    @{menuActivities}[2:3]
-        ${menuLength}    Get Length    ${menuActivities}
-        Log    ${menuLength}
-        FOR    ${I}    IN    @{menuActivities}
-            ${menuLength}    Evaluate    ${menuLength}-1
-            Log Many    ${menuLength}    ${I}
-            Sleep    ${wait5}
-            Click    ${I}
-            Click    buttonSelect
-            Comment    Gate Crossing Do Not need buttonActivityEnd
-    # \ \ \ \ \ \ \ \ \ \ \ ${existsbuttonActivities} \ \ \ Exists \ \ \ buttonActivities \ \ \ ${wait5}
-    # \ \ \ \ \ \ \ \ \ \ \ IF \ \ \ ${existsbuttonActivities}
-    # \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Click \ \ \ buttonActivities
-    #CONTINUE
-    # \ \ \ \ \ \ \ \ \ \ \ END
-    #
-            ${existsButtonActivityEnd}    Exists    buttonActivityEnd    ${wait15}
-            IF    ${existsButtonActivityEnd}
-                Click    buttonActivityEnd
-                CONTINUE
-            END
-            ${existsButtonBack}    Exists    buttonBack    ${wait5}
-            ${existsbuttonSelect}    Exists    buttonSelect    ${wait5}
-            IF    ${existsButtonBack}
-                Comment    Inspection History Screen Maybe
-    #Click    buttonBack
-                Click    buttonPre-trip
-                Click    buttonPost-trip
-                MechanicalInspection
-            END
-            IF    ${menuLength}
-                BREAK
-            END
-        selectActivities
+    # \ \ \ \ \ \ \ Sleep \ \ \ ${one}
+            selectActivities
+            CONTINUE
         END
-    #
+        ${existsheaderActivityContainerDropOff}    Exists    headerActivityContainerDropOff    ${wait5}
+        IF    ${existsheaderActivityContainerDropOff}
+            Log    TBD-ActivityContainerDropOff
+            Click    buttonCancel
+            selectActivities
+            CONTINUE
+        END
+        IF    ${menuLength}==0
+            BREAK
+        END
+    END
 
 MechanicalInspection
     Log    MechanicalInspection
+    Click    buttonPre-trip
+    Click    buttonPost-trip
     WHILE    True
-    ${existsiconRedDot}    Exists    iconRedDot    ${wait5}
-    ${existsbuttonClearSignature}    Exists    buttonClearSignature    ${wait5}
-    IF    ${existsiconRedDot}
-        Log    More Tabs Exists
-    ELSE IF    ${existsbuttonClearSignature}
-        BREAK
-    END
-    ${countScreenNext}    Set Variable    0
-    Log    New Tab
-    WHILE    True
-        Log    Next Screen
-        singleScreen
-        singleScreenPaginator
-        ${countScreenNext}    Evaluate    ${countScreenNext}+1
-        IF    ${countScreenNext}>6
+        ${existsbuttonDone}    Exists    buttonDone    ${wait5}
+        IF    ${existsbuttonDone}
             BREAK
         END
     END
+    WHILE    True
+        Set Min Similarity    0.85
+        ${existsiconRedDot}    Exists    iconRedDot    ${wait5}
+        Set Min Similarity    0.6
+        ${existsbuttonClearSignature}    Exists    buttonClearSignature    ${wait5}
+        IF    ${existsbuttonClearSignature}
+            BREAK
+        END
+        IF    ${existsiconRedDot}
+            Log    More Tabs Exists
+        END
+        ${countScreenNext}    Set Variable    0
+        WHILE    True
+            Log    Next Screen
+            singleScreen    ${countScreenNext}
+            Log    ${countScreenNext}
+            singleScreenPaginator
+            ${existsbuttonClearSignature}    Exists    buttonClearSignature    ${wait5}
+            IF    ${existsbuttonClearSignature}
+                BREAK
+            END
+            ${countScreenNext}    Evaluate    ${countScreenNext}+1
+            IF    ${countScreenNext}>6
+                BREAK
+            END
+        END
     END
     Log    End of the tab
+    Signature
+    Complete
+    WHILE    True
+        ${existsbuttonView}    Exists    buttonView    ${wait5}
+        IF    ${existsbuttonView}
+            BREAK
+        END
+    END
+
+Signature
+    Log    Signature
+    WHILE    True
+        argTest
+        BREAK
+    END
+    #
+
+Complete
+    Log    Complete
+    Click    buttonComplete
 
 singleScreen
+    [Arguments]    ${countScreenNext}
     Log    singleScreen
     WHILE    True    # single screen
-        Sleep    ${One}
+    #Sleep    ${One}
         ${existsbuttonsPassFailInspection}    Exists    buttonsPassFailInspection    ${wait5}
-        IF    ${existsbuttonsPassFailInspection}==False
+        IF    ${existsbuttonsPassFailInspection}
+            Click    buttonsPassFailInspection    ${inspectionMarkX}
+            ${countScreenNext}    Evaluate    ${countScreenNext}+1
+    #Log    one check
+        ELSE
             ${countScreenNext}    Set Variable    0
             BREAK
         END
-        Log    TBD DEBUG click(find("buttonsPassFailInspection.png").offset(-70,0))
-        Log    one check
     END
     Log    we done page checks few times
     #
+    Return From Keyword    ${countScreenNext}
 
 singleScreenPaginator
     Log    singleScreenPaginator
+    ${countScreenNext}    Set Variable    0
     WHILE    True    # checking for next screen
-        ${countScreenNext}    Set Variable    0
-        ${existsbuttonDown}    Exists    buttonDown    ${wait5}
-        IF ${existsbuttonDown}
+        ${countScreenNext}    Evaluate    ${countScreenNext}+1
+        IF    ${countScreenNext}>10
+            BREAK
+        END
+        ${existsbuttonDown}    Exists    buttonDown    ${wait15}
+        IF    ${existsbuttonDown}
     #x=input("buttonDown.png")
             Click    buttonDown
             Log    next screen
             Sleep    ${wait5}
-            ${countScreenNext}    Evaluate    ${countScreenNext}+1
-            IF    ${countScreenNext}>10
-                BREAK
-            END
-            ${existsbuttonsPassFailInspection}    Exists    buttonsPassFailInspection    ${wait5}
+            ${existsbuttonsPassFailInspection}    Exists    buttonsPassFailInspection    ${wait15}
             IF    ${existsbuttonsPassFailInspection}
                 BREAK
             END
         END
+    #
         Log    TBD DEBUG click(inspectionArea.offset(120,0))    # next \ inspection area
-        ${existsbuttonsPassFailInspection}    Exists    buttonsPassFailInspection    ${wait5}
+        Click    buttonDone    ${nextPageX}    ${nextPageY}
+        ${existsbuttonsPassFailInspection}    Exists    buttonsPassFailInspection    ${wait15}
         IF    ${existsbuttonsPassFailInspection}
-                BREAK
+            BREAK
         END
+    #
+        Set Min Similarity    0.85
         ${existsiconRedDot}    Exists    iconRedDot    ${wait5}
+        Set Min Similarity    0.6
         IF    ${existsiconRedDot}
             Click    iconRedDot
             Log    tab exists
+            ${countScreenNext}    Set Variable    ${one}
             BREAK
-        ELSE
+        END
+        ${existsbuttonDone}    Exists    buttonDone    ${wait5}
+        IF    ${existsbuttonDone}
             Click    buttonDone
+            ${countScreenNext}    Set Variable    ${LoadTime}
             BREAK
         END
     END
     Log    end of the screen
+    Return From Keyword    ${countScreenNext}
     #
 
 selectDisposal
@@ -687,42 +828,166 @@ ExecuteDisposal
         Wait For Image    headerWarning    \    ${wait10}
         Click    buttonBlueYes
 
-TBD-ExecuteActivities
-        Log    ExecuteActivities
-        Click    @{menuActivities}[2:3]
-        ${menuLength}    Get Length    ${menuActivities}
-        Log    ${menuLength}
-        FOR    ${I}    IN    @{menuActivities}
-            ${menuLength}    Evaluate    ${menuLength} - ${one}
-            Log Many    ${menuLength}    ${I}
-            Click    ${I}
-            Click    buttonSelect
-            Comment    Gate Crossing Do Not need buttonActivityEnd
-            ${existsButtonActivityEnd}    Exists    buttonActivityEnd    ${wait5}
-            ${existsButtonBack}    Exists    buttonBack    ${wait5}
-            IF    ${existsButtonActivityEnd}==True
-                Click    buttonActivityEnd
+TBD-OLD-clickExecuteDLV
+    Comment    Click    Cart    ${completedX}    ${completedY}
+        Wait For Image    headerDeliveryYellow    \    ${wait10}
+        Click    Cart    ${DLVDLVselectCartX}    ${DLVDLVselectCartY}
+        Wait For Image    labelDLVpleaseSelectCart    \    ${wait10}
+        Click    Cart    ${DLVfirstCartX}    ${DLVfirstCartY}
+        Wait For Image    buttonDLVarriveAtCustomer    \    ${wait10}
+        Click    Cart    ${DLVarriveAtCustomerX}    ${DLVarriveAtCustomerY}
+        Wait For Image    labelDLVarrived    \    ${wait10}
+        Click    Cart    ${DLVstartServiceX}    ${DLVstartServiceY}
+        Wait For Image    labelDLVstarted    \    ${wait10}
+        Click    Cart    ${DLVendServiceX}    ${DLVendServiceY}
+        Wait For Image    labelDLVended    \    ${wait10}
+        Click    Cart    ${DLVdepartFromCustomerX}    ${DLVdepartFromCustomerY}
+        Wait For Image    headerCallsWhite    \    ${wait10}
+        selectManualConfirm
+
+clickExecuteDLV
+    Comment    Click    Cart    ${completedX}    ${completedY}
+        Wait For Image    headerDeliveryYellow    \    ${wait10}
+    #Click    Cart    ${DLVDLVselectCartX}    ${DLVDLVselectCartY}
+        Click    buttonDLVselectCart
+        Wait For Image    labelDLVpleaseSelectCart    \    ${wait10}
+        Click    labelDLVpleaseSelectCart    ${DLVabelFirstCartX}    ${DLVabelFirstCartY}
+        Wait For Image    buttonDLVarriveAtCustomer    \    ${wait10}
+    #Click    Cart    ${DLVarriveAtCustomerX}    ${DLVarriveAtCustomerY}
+        Click    buttonDLVarriveAtCustomer
+        Wait For Image    labelDLVarrived    \    ${wait10}
+    #Click    Cart    ${DLVstartServiceX}    ${DLVstartServiceY}
+        Click    buttonDLVstartService
+        Wait For Image    labelDLVstarted    \    ${wait10}
+    #Click    Cart    ${DLVendServiceX}    ${DLVendServiceY}
+        Click    buttonDLVendService
+        Wait For Image    labelDLVended    \    ${wait10}
+    #Click    Cart    ${DLVdepartFromCustomerX}    ${DLVdepartFromCustomerY}
+        Click    buttonDLVdepartFromCustomer
+        Wait For Image    headerCallsWhite    \    ${wait10}
+        selectManualConfirm
+
+StopsException-OLDworks
+        ${exLength}    Get Length    ${exMX}
+        ${exI}    Set Variable    -1
+        WHILE    True
+            ${existstagWeightKG}    Exists    tagWeightKG    ${wait5}
+            ${existslabelSIZEselected}    Exists    labelSIZEselected    ${wait5}
+            ${existslabelAUD-SIZE}    Exists    labelAUD-SIZE    ${wait5}
+            ${exI}    Evaluate    ${exI}+1
+            ${exI}    Evaluate    ${exI} % ${exLength}
+            ${exceptionTmpX}    Evaluate    ${exMX}[${exI}]
+            ${exceptionTmpY}    Evaluate    ${exMY}[${exI}]
+    #
+            IF    ${existstagWeightKG}==True
+                clickException    ${exceptionTmpX}    ${exceptionTmpY}
                 CONTINUE
             END
-            ${existsheaderInspectionHistory}    Exists    headerInspectionHistory    ${wait10}
-            IF    ${existsheaderInspectionHistory}==True
-                Comment    Inspection History Screen Maybe
-                Click    buttonPre-trip
-                ${existsheaderInspectionHistory}    Exists    headerInspectionHistory    ${wait10}
-                IF    ${existsheaderInspectionHistory}
-                    Log    Pre-Inspection
-                    CONTINUE
-                END
-                Click    buttonPost-trip
-                ${existsheaderInspectionHistory}    Exists    headerInspectionHistory    ${wait10}
-                IF    ${existsheaderInspectionHistory}
-                    Log    Post-Inspection
-                    CONTINUE
-                END
+            IF    ${existslabelSIZEselected}==True
+                clickException    ${exceptionTmpX}    ${exceptionTmpY}
+                CONTINUE
             END
-            IF    ${menuLength}==0
+    #
+            IF    ${existslabelAUD-SIZE}==True
+                Log    AUDit
+                Click    Cart    ${completedX}    ${completedY}
+                Wait For Image    headerAuditingYellowOnBlue    \    ${wait20}
+    # provide W-L-H
+                Click    Cart    ${WaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${LaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${HaudX}    ${WLHaudY}
+                clickKbd    ${exI}
+                Click    buttonKbdDone
+                Click    Cart    ${exceptionAUDX}    ${exceptionAUDY}
+                Wait For Image    buttonExceptionCallNote    \    ${wait20}
+                clickException    ${exceptionTmpX}    ${exceptionTmpY}
+                CONTINUE
+            END
+    #
+            BREAK
+        END
+        Click    buttonBack
+
+clickExceptionOLDworks
+    [Arguments]    ${exceptionTmpX}    ${exceptionTmpY}
+        Click    Cart    ${exceptionX}    ${exceptionY}
+        Wait For Image    buttonExceptionCallNote    \    ${wait15}
+        Click    Cart    ${exceptionTmpX}    ${exceptionTmpY}
+        WHILE    True
+            ${existsbuttonExceptionCallNote}    Exists    buttonExceptionCallNote    ${wait5}
+            IF    ${existsbuttonExceptionCallNote}
+                CONTINUE
+            ELSE
                 BREAK
             END
-        selectActivities
         END
+        selectManualConfirm
+
+clickEnvelope
+    ${existlabelEnvelopeWhite}    Exists    labelEnvelopeWhite    ${wait5}
+    IF    ${existlabelEnvelopeWhite}
+        Click    Cart    444    0
+    END
+
+selectSequenceList
+    Log    selectSequenceList
+    Wait For Image    headerCallsWhite    \    ${wait15}
+    Click    Cart    -350    80
+
+FinishMainMenu
+    Click    buttonSwitchDriverRoute
+
+UnknownAddress
+    ${existsheaderUnknownAddress}    Exists    UnknownAddress    ${wait5}
+    Click    buttonBack
+
+ExecuteStopsWithRaicing
+        WHILE    True
     #
+            ${existsheaderAuditingYellowOnBlue}    Exists    headerAuditingYellowOnBlue    ${wait5}
+            IF    ${existsheaderAuditingYellowOnBlue}==True
+                Log    AUDit
+                clickExecuteAUD
+                CONTINUE
+            END
+    #
+            ${existsheaderDeliveryYellow}    Exists    headerDeliveryYellow    ${wait5}
+            IF    ${existsheaderDeliveryYellow}
+                Log    Delivery
+                clickExecuteDLV
+                CONTINUE
+            END
+    #
+            ${existstagWeightKG}    Exists    tagWeightKG    ${wait15}
+            IF    ${existstagWeightKG}
+                ${counterStops}    Evaluate    ${counterStops}+1
+                ${kbdTMP}    Evaluate    ${counterStops} % 10
+                Log Many    ${counterStops}    ${kbdTMP}    tagWeightKG
+                Click    tagWeightKG
+                clickKbd    ${kbdTMP}
+                Click    buttonKbdDone
+                clickExecute
+                CONTINUE
+            END
+    #
+            ${existslabelSIZEselected}    Exists    labelSIZEselected    ${wait5}
+            IF    ${existslabelSIZEselected}
+                Click    buttonManualVideo
+                Click    buttonManualPhoto
+                clickExecute
+                CONTINUE
+            END
+    #
+            BREAK
+        END
+        Click    buttonBack
+
+OLDclickExecuteAUD
+        Click    Cart    ${completedX}    ${completedY}
+        Sleep    ${one}
+        Click    Cart    ${confirmAuditingX}    ${confirmAuditingY}
+        selectManualConfirm
