@@ -4,6 +4,7 @@ Suite Setup       Add Needed Image Path
 Test Setup        startWA
 Test Teardown     closeWA
 Library           SikuliLibrary
+Library           String
 
 *** Variables ***
 ${IMAGE_DIR_WFH}    C:\\Sikuli\\WasteApp\\WFH
@@ -136,7 +137,7 @@ ZcloseRoute
     closeRoute
 
 tmpTest
-    argTest
+    splitTest
 
 ReadMesageRoutLess
     LogonDriver
@@ -145,10 +146,12 @@ ReadMesageRoutLess
     FinishMainMenu
 
 *** Keywords ***
-argTest
+tmpNameTest
+    LogTestName
+
+generateSignature
     Click    signatureStart
     Drag And Drop    signatureStart    signatureEnd
-    Log    Test
 
 StartRoute
     LogonDriver
@@ -722,7 +725,7 @@ MechanicalInspection
 Signature
     Log    Signature
     WHILE    True
-        argTest
+        generateSignature
         BREAK
     END
     #
@@ -991,3 +994,22 @@ OLDclickExecuteAUD
         Sleep    ${one}
         Click    Cart    ${confirmAuditingX}    ${confirmAuditingY}
         selectManualConfirm
+
+splitTest
+    ${rnd} =    Generate Random String    2    [NUMBERS]
+    Log Many    ${TEST_NAME}    xohoho    ${rnd}
+    ${NN}    Set Variable    tmpNameTest
+    Run Keyword    ${NN}
+    ${PR}    Set Variable    Programmist
+    ${PRlength}=    Get Length    ${PR}
+    FOR    ${I}    IN RANGE    ${PRlength}
+        ${II}    Evaluate    ${I}+1
+        Log    ${PR}[${I}:${II}]
+    END
+    FOR    ${I}    IN RANGE    ${PRlength}
+        ${II}    Evaluate    ${PR}.pop()
+        Log Many    ${I}    ${II}
+    END
+
+LogTestName
+    Log    ${TEST_NAME}
