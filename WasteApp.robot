@@ -242,6 +242,9 @@ selectCalls
 selectManualConfirm
         Wait For Image    Cart    \    ${wait15}
         Click    Cart    40    80
+        ${Tname}    Set Variable    ${TEST_NAME}
+        Set Suite Variable    ${Tname}
+        Log    ${Tname}
 
 StopsExtra
     WHILE    True
@@ -434,64 +437,20 @@ clickNotOut
         Click    Cart    ${notOutX}    ${notOutY}
         selectManualConfirm
 
-ExecuteStops
-        WHILE    True
-    #Click    Cart    ${CartManualConfirmX}    ${CartManualConfirmY}
-            selectManualConfirm
-            Wait For Image    headerCallsWhite    \    ${wait5}
-            ${existslabelSIZESelected}    Exists    labelSIZESelected    ${wait5}
-            IF    ${existslabelSIZESelected}
-                No Operation
-            ELSE
-                BREAK
-            END
-            ${existsbuttonBack}    Exists    buttonBack    ${wait5}
-            IF    ${existsbuttonBack}
-                Click    buttonBack    100    0    #Click right of button Back
-    # size 2 stop > need provide weght
-            ${existstagWeightKG}    Exists    tagWeightKG    ${wait10}
-                IF    ${existstagWeightKG}
-                    Log    WeightKG
-                    ${counterStops}    Evaluate    ${counterStops}+1
-                    ${kbdTMP}    Evaluate    ${counterStops} % 10
-                    Log Many    ${counterStops}    ${kbdTMP}    tagWeightKG
-                    Click    tagWeightKG
-                    clickKbd    ${kbdTMP}
-                    Click    buttonKbdDone
-                    clickExecute
-                    CONTINUE
-                END
-    # header black Calls
-    # label Weight > provide KG, check for headeCallsblack and no button Back
-    #click completed; wait for calls white
-    # AUD type stop \ whl and e.t.c
-                    ${existsheaderAuditingYellowOnBlue}    Exists    headerAuditingYellowOnBlue    ${wait5}
-                IF    ${existsheaderAuditingYellowOnBlue}==True
-                    Log    AUDit
-                    clickExecuteAUD
-                    CONTINUE
-                END
-    # DLR carts
-    # regular stop size 96> continue, last stop to check; nothing to do
-                CONTINUE
-            ELSE
-                BREAK
-            END
-        END
-        Click    buttonBack
-
 prowideAUDwlh
-    # provide W-L-H
-                ${exI}    Evaluate    7
-                Click    Cart    ${WaudX}    ${WLHaudY}
-                clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${LaudX}    ${WLHaudY}
-                clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${HaudX}    ${WLHaudY}
-                clickKbd    ${exI}
-                Click    buttonKbdDone
+    Log    provide Audit W-L-H
+    WHILE    True
+        ${existsauditingEmptyMeasurementField}    Exists    auditingEmptyMeasurementField
+        IF    ${existsauditingEmptyMeasurementField}
+            ${measurement}    Generate Random String    2    [NUMBERS]
+            Click    auditingEmptyMeasurementField
+            Wait For Image    buttonKbdDone    \    ${wait15}
+            Click    buttonKbdDone
+            Paste text    \    ${measurement}
+        ELSE
+            BREAK
+        END
+    END
 
 tmpTMP
         WHILE    True
@@ -989,12 +948,6 @@ ExecuteStopsWithRaicing
         END
         Click    buttonBack
 
-OLDclickExecuteAUD
-        Click    Cart    ${completedX}    ${completedY}
-        Sleep    ${one}
-        Click    Cart    ${confirmAuditingX}    ${confirmAuditingY}
-        selectManualConfirm
-
 splitTest
     ${rnd} =    Generate Random String    2    [NUMBERS]
     Log Many    ${TEST_NAME}    xohoho    ${rnd}
@@ -1006,10 +959,59 @@ splitTest
         ${II}    Evaluate    ${I}+1
         Log    ${PR}[${I}:${II}]
     END
-    FOR    ${I}    IN RANGE    ${PRlength}
-        ${II}    Evaluate    ${PR}.pop()
-        Log Many    ${I}    ${II}
-    END
 
 LogTestName
     Log    ${TEST_NAME}
+
+ExecuteStops
+        WHILE    True
+    #Click    Cart    ${CartManualConfirmX}    ${CartManualConfirmY}
+            selectManualConfirm
+            Wait For Image    headerCallsWhite    \    ${wait5}
+            ${existslabelSIZESelected}    Exists    labelSIZESelected    ${wait5}
+            IF    ${existslabelSIZESelected}
+                No Operation
+            ELSE
+                BREAK
+            END
+            ${existsbuttonBack}    Exists    buttonBack    ${wait5}
+            IF    ${existsbuttonBack}
+                Click    buttonBack    100    0    #Click right of button Back
+                ${existstagWeightKG}    Exists    tagWeightKG    ${wait10}
+                IF    ${existstagWeightKG}
+                    Log    WeightKG
+                    ${WeightKG}    Generate Random String    2    [NUMBERS]
+                    Click    tagWeightKG
+                    Wait For Image    buttonKbdDone    \    ${wait15}
+                    Click    buttonKbdDone
+                    Paste text    \    ${WeightKG}
+                    clickExecute
+                    CONTINUE
+                END
+                    ${existsheaderAuditingYellowOnBlue}    Exists    headerAuditingYellowOnBlue    ${wait5}
+                IF    ${existsheaderAuditingYellowOnBlue}==True
+                    Log    AUDit
+                    clickExecuteAUD
+                    CONTINUE
+                END
+    # DLR carts
+    # regular stop size 96> continue, last stop to check; nothing to do
+            ${existsheaderDeliveryYellow}    Exists    headerDeliveryYellow    ${wait5}
+            IF    ${existsheaderDeliveryYellow}
+                Log    Delivery
+                clickExecuteDLV
+                CONTINUE
+            END
+    #
+            ${existsheaderDeliveryYellow}    Exists    headerDeliveryYellow    ${wait5}
+            IF    ${existsheaderDeliveryYellow}
+                Log    Delivery
+                clickExecuteDLV
+                CONTINUE
+            END
+            CONTINUE
+            ELSE
+                BREAK
+            END
+        END
+        Click    buttonBack
