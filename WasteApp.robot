@@ -5,6 +5,7 @@ Test Setup        startWA
 Test Teardown     closeWA
 Library           SikuliLibrary
 Library           String
+Library           Collections
 
 *** Variables ***
 ${IMAGE_DIR_WFH}    C:\\Sikuli\\WasteApp\\WFH
@@ -85,14 +86,23 @@ ${CartManualConfirmY}    80
 @{menuActivities}    menuGateCrossing    menuBreak    menuMeal    menuWaiting    menuMechanicalInspection    menuRefueling    menuBreakdown    menuGarage    menuYardWork    menuContainerDropOff    menuAdministrative
 @{exMX}           -200    0    -200    0    -200    0    -200
 @{exMY}           350    350    450    450    520    520    610
+&{tName}          WAworkflow=StopsExecute    Extra=StopsExtra    Exception=StopsException
+&{WAworkflow}     WeightKG=clickExecute    headerAuditingYellowOnBlue=clickExecuteAUD    headerDeliveryYellow=clickExecuteDLV
+&{NotOut}         WeightKG=clickNotOut    headerAuditingYellowOnBlue=clickNotOut    headerDeliveryYellow=clickNotOut
+&{buttonRoffBbackX}    WAworkflow=100    NotOut=250    Exceptions=370
 
 *** Test Cases ***
+AcloseRoute
+    StartRoute
+    closeRoute
+
 WAworkflow
     StartRoute
     selectCalls
     selectSequenceList
     selectManualConfirm
-    ExecuteStops
+    copyWADictionary
+    StopsExecute
 
 Disposal
     StartRoute
@@ -129,15 +139,17 @@ SendMessage
 NotOut
     StartRoute
     selectCalls
+    selectSequenceList
     selectManualConfirm
-    StopsNotOut
+    copyNotOutDictionary
+    StopsExecute
 
 ZcloseRoute
     StartRoute
     closeRoute
 
 tmpTest
-    splitTest
+    LogTestName
 
 ReadMesageRoutLess
     LogonDriver
@@ -146,6 +158,12 @@ ReadMesageRoutLess
     FinishMainMenu
 
 *** Keywords ***
+OLDNotOut
+    StartRoute
+    selectCalls
+    selectManualConfirm
+    StopsNotOut
+
 tmpNameTest
     LogTestName
 
@@ -242,9 +260,6 @@ selectCalls
 selectManualConfirm
         Wait For Image    Cart    \    ${wait15}
         Click    Cart    40    80
-        ${Tname}    Set Variable    ${TEST_NAME}
-        Set Suite Variable    ${Tname}
-        Log    ${Tname}
 
 StopsExtra
     WHILE    True
@@ -907,47 +922,6 @@ UnknownAddress
     ${existsheaderUnknownAddress}    Exists    UnknownAddress    ${wait5}
     Click    buttonBack
 
-ExecuteStopsWithRaicing
-        WHILE    True
-    #
-            ${existsheaderAuditingYellowOnBlue}    Exists    headerAuditingYellowOnBlue    ${wait5}
-            IF    ${existsheaderAuditingYellowOnBlue}==True
-                Log    AUDit
-                clickExecuteAUD
-                CONTINUE
-            END
-    #
-            ${existsheaderDeliveryYellow}    Exists    headerDeliveryYellow    ${wait5}
-            IF    ${existsheaderDeliveryYellow}
-                Log    Delivery
-                clickExecuteDLV
-                CONTINUE
-            END
-    #
-            ${existstagWeightKG}    Exists    tagWeightKG    ${wait15}
-            IF    ${existstagWeightKG}
-                ${counterStops}    Evaluate    ${counterStops}+1
-                ${kbdTMP}    Evaluate    ${counterStops} % 10
-                Log Many    ${counterStops}    ${kbdTMP}    tagWeightKG
-                Click    tagWeightKG
-                clickKbd    ${kbdTMP}
-                Click    buttonKbdDone
-                clickExecute
-                CONTINUE
-            END
-    #
-            ${existslabelSIZEselected}    Exists    labelSIZEselected    ${wait5}
-            IF    ${existslabelSIZEselected}
-                Click    buttonManualVideo
-                Click    buttonManualPhoto
-                clickExecute
-                CONTINUE
-            END
-    #
-            BREAK
-        END
-        Click    buttonBack
-
 splitTest
     ${rnd} =    Generate Random String    2    [NUMBERS]
     Log Many    ${TEST_NAME}    xohoho    ${rnd}
@@ -962,10 +936,24 @@ splitTest
 
 LogTestName
     Log    ${TEST_NAME}
+    Log Many    &{WAworkflow}
+    ${x} =    Get From Dictionary    ${WAworkflow}    WeightKG
+    Log    ${x}
+    Log    ${WAworkflow.WeightKG}
+    Log Many    test2    &{tName}
+    ${y}=    Get From Dictionary    ${tName}    WAworkflow
+    Log    ${y}
+    Log    ${tName.WAworkflow}
 
-ExecuteStops
-        WHILE    True
+StopsExecute
+    #&{shallow_copy}=    Copy Dictionary    ${WAworkflow}    deepcopy=False
+    #${shiftX}=    Get From Dictionary    ${shallow_copy}    buttonRoffBbackX
+    WHILE    True
     #Click    Cart    ${CartManualConfirmX}    ${CartManualConfirmY}
+    ${existsassignmentButtonOK}    Exists    assignmentButtonOK    ${wait5}
+            IF    ${existsassignmentButtonOK}
+                Click    assignmentButtonOK
+            END
             selectManualConfirm
             Wait For Image    headerCallsWhite    \    ${wait5}
             ${existslabelSIZESelected}    Exists    labelSIZESelected    ${wait5}
@@ -979,39 +967,53 @@ ExecuteStops
                 Click    buttonBack    100    0    #Click right of button Back
                 ${existstagWeightKG}    Exists    tagWeightKG    ${wait10}
                 IF    ${existstagWeightKG}
-                    Log    WeightKG
-                    ${WeightKG}    Generate Random String    2    [NUMBERS]
-                    Click    tagWeightKG
-                    Wait For Image    buttonKbdDone    \    ${wait15}
-                    Click    buttonKbdDone
-                    Paste text    \    ${WeightKG}
-                    clickExecute
+                    feelWeightKG
+    #${keywordName}    Get From Dictionary    ${WAworkflow}    WeightKG
+    ${keywordName}=    Get From Dictionary    ${shallow_copy}    WeightKG
+    #clickExecute
+                    Run Keyword    ${keywordName}
                     CONTINUE
                 END
-                    ${existsheaderAuditingYellowOnBlue}    Exists    headerAuditingYellowOnBlue    ${wait5}
+                ${existsheaderAuditingYellowOnBlue}    Exists    headerAuditingYellowOnBlue    ${wait5}
                 IF    ${existsheaderAuditingYellowOnBlue}==True
                     Log    AUDit
-                    clickExecuteAUD
+    #${keywordName}    Set Variable    ${WAworkflow.headerAuditingYellowOnBlue}
+                    ${keywordName}=    Get From Dictionary    ${shallow_copy}    headerAuditingYellowOnBlue
+    #clickExecuteAUD
+                    Run Keyword    ${keywordName}
                     CONTINUE
                 END
     # DLR carts
     # regular stop size 96> continue, last stop to check; nothing to do
             ${existsheaderDeliveryYellow}    Exists    headerDeliveryYellow    ${wait5}
-            IF    ${existsheaderDeliveryYellow}
-                Log    Delivery
-                clickExecuteDLV
+                IF    ${existsheaderDeliveryYellow}
+    #${keywordName}    Set Variable    ${nameMode.headerDeliveryYellow}
+                    ${keywordName}=    Get From Dictionary    ${shallow_copy}    headerDeliveryYellow
+    #clickExecuteDLV
+                    Run Keyword    ${keywordName}
+                    CONTINUE
+                END
+                ClickNone
                 CONTINUE
-            END
-    #
-            ${existsheaderDeliveryYellow}    Exists    headerDeliveryYellow    ${wait5}
-            IF    ${existsheaderDeliveryYellow}
-                Log    Delivery
-                clickExecuteDLV
-                CONTINUE
-            END
-            CONTINUE
             ELSE
                 BREAK
             END
         END
         Click    buttonBack
+
+clickNone
+    No Operation
+
+feelWeightKG
+    Log    feelWeightKG
+    ${WeightKG}    Generate Random String    2    [NUMBERS]
+    Click    tagWeightKG
+    Wait For Image    buttonKbdDone    \    ${wait15}
+    Click    buttonKbdDone
+    Paste text    \    ${WeightKG}
+
+copyWADictionary
+    &{shallow_copy}=    Copy Dictionary    ${WAworkflow}    deepcopy=False
+
+copyNotOutDictionary
+    &{shallow_copy}=    Copy Dictionary    ${NotOut}    deepcopy=False
