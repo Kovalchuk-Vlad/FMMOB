@@ -6,6 +6,7 @@ Test Teardown     closeWA
 Library           SikuliLibrary
 Library           String
 Library           Collections
+Library           Offpyautogui
 
 *** Variables ***
 ${IMAGE_DIR_WFH}    C:\\Sikuli\\WasteApp\\WFH
@@ -83,6 +84,7 @@ ${WFH_completedX}    -190
 ${WFH_completedY}    540
 ${CartManualConfirmX}    40
 ${CartManualConfirmY}    80
+${buttonBackShX}    111
 @{menuActivities}    menuGateCrossing    menuBreak    menuMeal    menuWaiting    menuMechanicalInspection    menuRefueling    menuBreakdown    menuGarage    menuYardWork    menuContainerDropOff    menuAdministrative
 @{exMX}           -200    0    -200    0    -200    0    -200
 @{exMY}           350    350    450    450    520    520    610
@@ -90,6 +92,9 @@ ${CartManualConfirmY}    80
 &{WAworkflow}     WeightKG=clickExecute    headerAuditingYellowOnBlue=clickExecuteAUD    headerDeliveryYellow=clickExecuteDLV
 &{NotOut}         WeightKG=clickNotOut    headerAuditingYellowOnBlue=clickNotOut    headerDeliveryYellow=clickNotOut
 &{buttonRoffBbackX}    WAworkflow=100    NotOut=250    Exceptions=370
+
+
+
 
 *** Test Cases ***
 AcloseRoute
@@ -819,7 +824,7 @@ TBD-OLD-clickExecuteDLV
         Click    Cart    ${DLVendServiceX}    ${DLVendServiceY}
         Wait For Image    labelDLVended    \    ${wait10}
         Click    Cart    ${DLVdepartFromCustomerX}    ${DLVdepartFromCustomerY}
-        Wait For Image    headerCallsWhite    \    ${wait10}
+        Wait For Image    headerCallsWhite    \    ${wait15}
         selectManualConfirm
 
 clickExecuteDLV
@@ -841,7 +846,7 @@ clickExecuteDLV
         Wait For Image    labelDLVended    \    ${wait10}
     #Click    Cart    ${DLVdepartFromCustomerX}    ${DLVdepartFromCustomerY}
         Click    buttonDLVdepartFromCustomer
-        Wait For Image    headerCallsWhite    \    ${wait10}
+        Wait For Image    headerCallsWhite    \    ${wait15}
         selectManualConfirm
 
 StopsException-OLDworks
@@ -948,24 +953,28 @@ LogTestName
 StopsExecute
     #&{shallow_copy}=    Copy Dictionary    ${WAworkflow}    deepcopy=False
     #${shiftX}=    Get From Dictionary    ${shallow_copy}    buttonRoffBbackX
+    Log    ${TEST_NAME}
+    #${buttonBackShX}    Evaluate    ${buttonRoffBbackX.TEST_NAME}
+    #${buttonBackShX}    Evaluate    &{buttonRoffBbackX}[TEST_NAME]
+    Log Many    ${buttonBackShX}    Programmist Durak    ${buttonRoffBbackX.WAworkflow}
     WHILE    True
     #Click    Cart    ${CartManualConfirmX}    ${CartManualConfirmY}
-    ${existsassignmentButtonOK}    Exists    assignmentButtonOK    ${wait5}
+    ${existsassignmentButtonOK}    Exists    assignmentButtonOK    ${wait10}
             IF    ${existsassignmentButtonOK}
                 Click    assignmentButtonOK
             END
             selectManualConfirm
-            Wait For Image    headerCallsWhite    \    ${wait5}
-            ${existslabelSIZESelected}    Exists    labelSIZESelected    ${wait5}
+            Wait For Image    headerCallsWhite    \    ${wait15}
+            ${existslabelSIZESelected}    Exists    labelSIZESelected    ${wait10}
             IF    ${existslabelSIZESelected}
                 No Operation
             ELSE
                 BREAK
             END
-            ${existsbuttonBack}    Exists    buttonBack    ${wait5}
+            ${existsbuttonBack}    Exists    buttonBack    ${wait15}
             IF    ${existsbuttonBack}
-                Click    buttonBack    100    0    #Click right of button Back
-                ${existstagWeightKG}    Exists    tagWeightKG    ${wait10}
+                Click    buttonBack    ${buttonBackShX}    0    #Click right of button Back 100, 0
+                ${existstagWeightKG}    Exists    tagWeightKG    ${wait5}
                 IF    ${existstagWeightKG}
                     feelWeightKG
     #${keywordName}    Get From Dictionary    ${WAworkflow}    WeightKG
@@ -1014,6 +1023,11 @@ feelWeightKG
 
 copyWADictionary
     &{shallow_copy}=    Copy Dictionary    ${WAworkflow}    deepcopy=False
+    ${buttonBackShX}    Evaluate    ${buttonRoffBbackX.WAworkflow}
+    Set Suite Variable    ${buttonBackShX}
+    Set Suite Variable    &{shallow_copy}
 
 copyNotOutDictionary
     &{shallow_copy}=    Copy Dictionary    ${NotOut}    deepcopy=False
+    ${buttonBackShX}    Evaluate    ${buttonRoffBbackX.NotOut}
+    Set Suite Variable    ${buttonBackShX}
