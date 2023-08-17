@@ -1,16 +1,16 @@
 *** Settings ***
-Documentation     Read Message
+Documentation     Read Message Test Setup startWA Test Teardown closeWA
 Suite Setup       Add Needed Image Path
-Test Setup        startWA
-Test Teardown     closeWA
 Library           SikuliLibrary
 Library           String
 Library           Collections
-Library           Offpyautogui
+Library           Screenshot
 
 *** Variables ***
+${LibraryAutoIt}    pyautogui
 ${IMAGE_DIR_WFH}    C:\\Sikuli\\WasteApp\\WFH
 ${IMAGE_DIR}      C:\\Sikuli\\WasteApp\\img
+${SCREENSHOT_DIR}    C:\\WA\\SCREENSHOT
 ${testWorkflow}    WAworkflow
 ${wait2}          2
 ${wait5}          5
@@ -92,11 +92,47 @@ ${buttonBackShX}    111
 &{WAworkflow}     WeightKG=clickExecute    headerAuditingYellowOnBlue=clickExecuteAUD    headerDeliveryYellow=clickExecuteDLV
 &{NotOut}         WeightKG=clickNotOut    headerAuditingYellowOnBlue=clickNotOut    headerDeliveryYellow=clickNotOut
 &{buttonRoffBbackX}    WAworkflow=100    NotOut=250    Exceptions=370
+${Simage}         \
+${Stime}          5
+${Sx}             \
+${Sy}             \
+${screenTrek}     0
+${screenVDS}      1
+@{speed}          10    60    210    180
+${speedZero}      0.0
+${Kmh}            Km/h
+${maxWeight}      20000
+${KG}             KG
+${highestPrecision}    1
+${regularPrecision}    0.6
+${activityPrecision}    0.85
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 *** Test Cases ***
+setLiftArm
+    openLiftArm
+
 AcloseRoute
     StartRoute
     closeRoute
@@ -154,7 +190,7 @@ ZcloseRoute
     closeRoute
 
 tmpTest
-    LogTestName
+    Aug16
 
 ReadMesageRoutLess
     LogonDriver
@@ -173,7 +209,7 @@ tmpNameTest
     LogTestName
 
 generateSignature
-    Click    signatureStart
+    SikuliLibrary.Click    signatureStart
     Drag And Drop    signatureStart    signatureEnd
 
 StartRoute
@@ -183,7 +219,7 @@ StartRoute
 Add Needed Image Path
         Add Image Path    ${IMAGE_DIR}
         Log    ${IMAGE_DIR}
-        Set Min Similarity    0.6
+        Set Min Similarity    ${regularPrecision}
 
 startWA
         ${is_10exists}    Exists    shortcutWA10    ${wait5}
@@ -191,12 +227,12 @@ startWA
         WHILE    True    limit=33
             IF    ${is_10exists}
                 Wait for Image    shortcutWA10    \    ${wait10}
-                Double Click    shortcutWA10
+                SikuliLibrary.Double Click    shortcutWA10
                 BREAK
             END
             IF    ${is_7exists}
                 Wait for Image    shortcutWA7    \    ${wait10}
-                Double Click    shortcutWA7
+                SikuliLibrary.Double Click    shortcutWA7
                 BREAK
             END
     END
@@ -205,66 +241,66 @@ LogonDriver
     WHILE    True    limit=13
         ${existsbuttonBack}    Exists    buttonBack    ${wait5}
         IF    ${existsbuttonBack}
-            Click    buttonBack
+            SikuliLibrary.Click    buttonBack
         END
         ${existsbuttonLogon}    Exists    buttonLogon    ${wait5}
         IF    ${existsbuttonLogon}
-            Click    buttonLogon
+            SikuliLibrary.Click    buttonLogon
             BREAK
         END
     END
 
 selectRoute_fromWork
         Wait For Image    headerRouteList    \    ${wait10}
-        Click    headerRouteList    0    200
-        Click    headerRouteList    0    160    # WFH
-        Click    buttonBlueYes
+        SikuliLibrary.Click    headerRouteList    0    200
+        SikuliLibrary.Click    headerRouteList    0    160    # WFH
+        SikuliLibrary.Click    buttonBlueYes
 
 selectRoute
         Wait For Image    tagRoute    \    ${wait5}
-        Click    tagRoute    0    25
-        Click    buttonOK
+        SikuliLibrary.Click    tagRoute    0    25
+        SikuliLibrary.Click    buttonOK
 
 selectReadMessage
         Wait For Image    buttonReadMessage    \    ${LoadTime}
-        Click    buttonReadMessage
+        SikuliLibrary.Click    buttonReadMessage
 
 selectSendMessage
         Wait For Image    buttonSendMessage    \    ${LoadTime}
-        Click    buttonSendMessage
+        SikuliLibrary.Click    buttonSendMessage
 
 SendMessageScreen
         Log    SendMessageScreen
         Wait For Image    headerSendMessage    \    ${LoadTime}
-        Click    Cart    ${messageNoteX}    ${messageNoteY}
+        SikuliLibrary.Click    Cart    ${messageNoteX}    ${messageNoteY}
         Press Special Key    DOWN
-        Click    headerSendMessage
-        Click    buttonSendMessage
+        SikuliLibrary.Click    headerSendMessage
+        SikuliLibrary.Click    buttonSendMessage
 
 ReadMessages
         Log    ${EOM}
-        Click    buttonPrevious
-        Click    buttonNext
+        SikuliLibrary.Click    buttonPrevious
+        SikuliLibrary.Click    buttonNext
         WHILE    ${EOM}    limit=99
             ${EOM}    Exists    bodyMessage    ${wait5}
             Log    ${EOM}
             IF    ${EOM}==True
-                Click    buttonDelete
+                SikuliLibrary.Click    buttonDelete
             ELSE
                 BREAK
             END
         END
         ${EOM}    Set Variable    True
         Log    ${EOM}
-        Click    buttonBack
+        SikuliLibrary.Click    buttonBack
 
 selectCalls
         Wait For Image    buttonCalls    \    ${wait15}
-        Click    buttonCalls
+        SikuliLibrary.Click    buttonCalls
 
 selectManualConfirm
         Wait For Image    Cart    \    ${wait15}
-        Click    Cart    40    80
+        SikuliLibrary.Click    Cart    40    80
 
 StopsExtra
     WHILE    True
@@ -278,22 +314,22 @@ StopsExtra
         ${existbuttonExceptionSelect}    Exists    buttonExceptionSelect    ${wait5}
         IF    ${existbuttonExceptionSelect}
             Log    buttonExceptionSelect
-            Click    buttonExceptionSelect
+            SikuliLibrary.Click    buttonExceptionSelect
     #
             ${existsbuttonAuditException}    Exists    buttonAuditException    ${wait5}
             IF    ${existsbuttonAuditException}
     # provide W-L-H
                 ${exI}    Evaluate    9
-                Click    Cart    ${WaudX}    ${WLHaudY}
+                SikuliLibrary.Click    Cart    ${WaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${LaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${LaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${HaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${HaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    buttonAuditException
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    buttonAuditException
             END
     #
             clickExtra    ${countExtra}
@@ -309,46 +345,46 @@ StopsExtra
         END
         ${existsbuttonExceptionSelect}    Exists    buttonExceptionSelect    ${wait5}
         IF    ${existsbuttonExceptionSelect}
-            Click    buttonExceptionSelect
+            SikuliLibrary.Click    buttonExceptionSelect
             ${existsbuttonAuditException}    Exists    buttonAuditException    ${wait5}
             IF    ${existsbuttonAuditException}
     # provide W-L-H
                 ${exI}    Evaluate    6
-                Click    Cart    ${WaudX}    ${WLHaudY}
+                SikuliLibrary.Click    Cart    ${WaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${LaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${LaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${HaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${HaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    buttonAuditException
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    buttonAuditException
             END
             clickExtra    ${countExtra}
             CONTINUE
         END
         BREAK
     END
-    Click    buttonBack
+    SikuliLibrary.Click    buttonBack
 
 clickExtra
         [Arguments]    ${countExtra}
-        Click    Cart    ${exceptionX}    ${exceptionY}
-    #Sleep    ${wait5}
+        SikuliLibrary.Click    Cart    ${exceptionX}    ${exceptionY}
+    #BuiltIn.Sleep    ${wait5}
     Wait For Image    buttonPicture    \    ${wait20}
     #Wait For Image    buttonBack    \    ${wait20}
-        Click    Cart    ${exstraX}    ${exstraY}
+        SikuliLibrary.Click    Cart    ${exstraX}    ${exstraY}
         Wait For Image    labelWeightExtra    \    ${wait20}
-        Click    labelWeightExtra    ${labelWeightExtraX}
+        SikuliLibrary.Click    labelWeightExtra    ${labelWeightExtraX}
         clickKbd    ${countExtra}
-        Click    buttonKbdDone
-        Click    labelWeightExtra
+        SikuliLibrary.Click    buttonKbdDone
+        SikuliLibrary.Click    labelWeightExtra
         Wait For Image    buttonConfirm    \    ${wait20}
-        Click    buttonConfirm
-    #Sleep    ${wait5}
+        SikuliLibrary.Click    buttonConfirm
+    #BuiltIn.Sleep    ${wait5}
     Wait For Image    buttonExceptionCallNote    \    ${wait20}
-        Click    Cart    ${exstraConfirmX}    ${exstraConfirmY}
+        SikuliLibrary.Click    Cart    ${exstraConfirmX}    ${exstraConfirmY}
         selectManualConfirm
 
 StopsException
@@ -374,20 +410,20 @@ StopsException
     #
             IF    ${existslabelAUD-SIZE}==True
                 Log    AUDit
-                Click    Cart    ${completedX}    ${completedY}
+                SikuliLibrary.Click    Cart    ${completedX}    ${completedY}
                 Wait For Image    headerAuditingYellowOnBlue    \    ${wait20}
     # provide W-L-H
                 ${tmp}    Evaluate    1
-                Click    Cart    ${WaudX}    ${WLHaudY}
+                SikuliLibrary.Click    Cart    ${WaudX}    ${WLHaudY}
                 clickKbd    ${tmp}
-                Click    buttonKbdDone
-                Click    Cart    ${LaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${LaudX}    ${WLHaudY}
                 clickKbd    ${tmp}
-                Click    buttonKbdDone
-                Click    Cart    ${HaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${HaudX}    ${WLHaudY}
                 clickKbd    ${tmp}
-                Click    buttonKbdDone
-                Click    Cart    ${exceptionAUDX}    ${exceptionAUDY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${exceptionAUDX}    ${exceptionAUDY}
                 Wait For Image    buttonExceptionCallNote    \    ${wait20}
                 clickException    ${exceptionTmpX}    ${exceptionTmpY}
                 CONTINUE
@@ -395,7 +431,7 @@ StopsException
     #
             BREAK
         END
-        Click    buttonBack
+        SikuliLibrary.Click    buttonBack
 
 clickException
     [Arguments]    ${exceptionTmpX}    ${exceptionTmpY}
@@ -403,29 +439,29 @@ clickException
         ${existsbuttonException}    Exists    buttonException    ${wait5}
         ${existsbuttonExceptionSelect}    Exists    buttonExceptionSelect    ${wait5}
         IF    ${existsbuttonException}
-            Click    buttonException
+            SikuliLibrary.Click    buttonException
         ELSE IF    ${existsbuttonExceptionSelect}
-            Click    buttonExceptionSelect
+            SikuliLibrary.Click    buttonExceptionSelect
             ${existsbuttonAuditException}    Exists    buttonAuditException    ${wait5}
             IF    ${existsbuttonAuditException}
     # provide W-L-H
                 ${exI}    Evaluate    6
-                Click    Cart    ${WaudX}    ${WLHaudY}
+                SikuliLibrary.Click    Cart    ${WaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${LaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${LaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${HaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${HaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    buttonAuditException
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    buttonAuditException
             END
         END
-    #Click    Cart    ${exceptionX}    ${exceptionY}
+    #SikuliLibrary.Click    Cart    ${exceptionX}    ${exceptionY}
         ${existsbuttonExceptionCallNote}    Exists    buttonExceptionCallNote    ${wait5}
         Wait For Image    buttonExceptionCallNote    \    ${wait15}
-        Click    Cart    ${exceptionTmpX}    ${exceptionTmpY}
+        SikuliLibrary.Click    Cart    ${exceptionTmpX}    ${exceptionTmpY}
         WHILE    True
             ${existsbuttonExceptionCallNote}    Exists    buttonExceptionCallNote    ${wait5}
             IF    ${existsbuttonExceptionCallNote}
@@ -451,10 +487,10 @@ StopsNotOut
             END
             BREAK
         END
-        Click    buttonBack
+        SikuliLibrary.Click    buttonBack
 
 clickNotOut
-        Click    Cart    ${notOutX}    ${notOutY}
+        SikuliLibrary.Click    Cart    ${notOutX}    ${notOutY}
         selectManualConfirm
 
 prowideAUDwlh
@@ -463,9 +499,9 @@ prowideAUDwlh
         ${existsauditingEmptyMeasurementField}    Exists    auditingEmptyMeasurementField
         IF    ${existsauditingEmptyMeasurementField}
             ${measurement}    Generate Random String    2    [NUMBERS]
-            Click    auditingEmptyMeasurementField
+            SikuliLibrary.Click    auditingEmptyMeasurementField
             Wait For Image    buttonKbdDone    \    ${wait15}
-            Click    buttonKbdDone
+            SikuliLibrary.Click    buttonKbdDone
             Paste text    \    ${measurement}
         ELSE
             BREAK
@@ -493,17 +529,17 @@ tmpTMP
                 ${counterStops}    Evaluate    ${counterStops}+1
                 ${kbdTMP}    Evaluate    ${counterStops} % 10
                 Log Many    ${counterStops}    ${kbdTMP}    tagWeightKG
-                Click    tagWeightKG
+                SikuliLibrary.Click    tagWeightKG
                 clickKbd    ${kbdTMP}
-                Click    buttonKbdDone
+                SikuliLibrary.Click    buttonKbdDone
                 clickExecute
                 CONTINUE
             END
     #
             ${existslabelSIZEselected}    Exists    labelSIZEselected    ${wait5}
             IF    ${existslabelSIZEselected}
-                Click    buttonManualVideo
-                Click    buttonManualPhoto
+                SikuliLibrary.Click    buttonManualVideo
+                SikuliLibrary.Click    buttonManualPhoto
                 clickExecute
                 CONTINUE
             END
@@ -512,17 +548,17 @@ tmpTMP
 clickKbd
         [Arguments]    ${kbdTMP}
         Wait For Image    buttonKbdDone    \    ${wait15}
-        Click    buttonKbdClear
-        IF    ${kbdTMP} == 1    Click    buttonKbd1
-        IF    ${kbdTMP}==2    Click    buttonKbd2
-        IF    ${kbdTMP}==3    Click    buttonKbd3
-        IF    ${kbdTMP}==4    Click    buttonKbd4
-        IF    ${kbdTMP}==5    Click    buttonKbd5
-        IF    ${kbdTMP}==6    Click    buttonKbd6
-        IF    ${kbdTMP}==7    Click    buttonKbd7
-        IF    ${kbdTMP}==8    Click    buttonKbd8
-        IF    ${kbdTMP}==9    Click    buttonKbd9
-        IF    ${kbdTMP}==0    Click    buttonKbd0
+        SikuliLibrary.Click    buttonKbdClear
+        IF    ${kbdTMP} == 1    SikuliLibrary.Click    buttonKbd1
+        IF    ${kbdTMP}==2    SikuliLibrary.Click    buttonKbd2
+        IF    ${kbdTMP}==3    SikuliLibrary.Click    buttonKbd3
+        IF    ${kbdTMP}==4    SikuliLibrary.Click    buttonKbd4
+        IF    ${kbdTMP}==5    SikuliLibrary.Click    buttonKbd5
+        IF    ${kbdTMP}==6    SikuliLibrary.Click    buttonKbd6
+        IF    ${kbdTMP}==7    SikuliLibrary.Click    buttonKbd7
+        IF    ${kbdTMP}==8    SikuliLibrary.Click    buttonKbd8
+        IF    ${kbdTMP}==9    SikuliLibrary.Click    buttonKbd9
+        IF    ${kbdTMP}==0    SikuliLibrary.Click    buttonKbd0
 
 NoWeight-works-ExecuteStops
     ${testName}    Set Variable    ${TEST_NAME}
@@ -541,58 +577,58 @@ NoWeight-works-ExecuteStops
     #
             BREAK
         END
-        Click    buttonBack
+        SikuliLibrary.Click    buttonBack
 
 clickExecuteAUD
         prowideAUDwlh
-        Click    buttonAUDconfirm
+        SikuliLibrary.Click    buttonAUDconfirm
         selectManualConfirm
 
 clickExecute
-        Click    Cart    ${completedX}    ${completedY}
+        SikuliLibrary.Click    Cart    ${completedX}    ${completedY}
         selectManualConfirm
 
 clickExecuteWeight
-        Click    Cart    ${completedX}    ${completedY}
+        SikuliLibrary.Click    Cart    ${completedX}    ${completedY}
         selectManualConfirm
 
 MessedUP-clickExecute
-        Click    Cart    ${completedX}    ${completedY}
+        SikuliLibrary.Click    Cart    ${completedX}    ${completedY}
         ${existsHeaderAudinting}    Exists    headerAuditingYellowOnBlue    ${wait5}
         IF    ${existsHeaderAudinting}
-            Click    Cart    ${confirmAuditingX}    ${confirmAuditingY}
+            SikuliLibrary.Click    Cart    ${confirmAuditingX}    ${confirmAuditingY}
         END
         selectManualConfirm
 
 closeRoute
         Log    CloseRoute
-        Sleep    ${wait5}
+        BuiltIn.Sleep    ${wait5}
         Wait For Image    buttonSwitchDriverRoute    \    ${wait15}
-        Click    buttonSwitchDriverRoute
+        SikuliLibrary.Click    buttonSwitchDriverRoute
         ${existsButtonCloseroute}    Exists    buttonCloseroute    ${wait15}
-        Click    buttonCloseroute
+        SikuliLibrary.Click    buttonCloseroute
         selectRoute_fromWork
 
 closeWA
         Log    CloseWA
-        Sleep    ${wait5}
+        BuiltIn.Sleep    ${wait5}
         Wait For Image    buttonSwitchDriverRoute    \    ${wait15}
-        Click    buttonSwitchDriverRoute
+        SikuliLibrary.Click    buttonSwitchDriverRoute
         Wait For Image    buttonSwRouteDriver    \    ${wait15}
-        Click    buttonSwRouteDriver
+        SikuliLibrary.Click    buttonSwRouteDriver
         Wait For Image    buttonSwitchDriver    \    ${wait15}
-        Click    buttonSwitchDriver
+        SikuliLibrary.Click    buttonSwitchDriver
         Wait For Image    buttonDesktop    \    ${wait15}
-        Click    buttonDesktop
+        SikuliLibrary.Click    buttonDesktop
         Wait For Image    buttonBlueYes    \    ${wait15}
-        Click    buttonBlueYes
+        SikuliLibrary.Click    buttonBlueYes
         ${existsshortcutCloseWA10}    Exists    shortcutCloseWA10    ${wait10}
         IF    ${existsshortcutCloseWA10}
-            Double Click    shortcutCloseWA10
+            SikuliLibrary.Double Click    shortcutCloseWA10
         END
         ${existsshortcutCloseWA7}    Exists    shortcutCloseWA7    ${wait10}
         IF    ${existsshortcutCloseWA7}
-            Double Click    shortcutCloseWA7
+            SikuliLibrary.Double Click    shortcutCloseWA7
         END
 
 selectActivities
@@ -602,16 +638,16 @@ selectActivities
             BREAK
         END
     END
-    Click    buttonActivities
+    SikuliLibrary.Click    buttonActivities
 
 ExecuteActivities
     Log    ExecuteActivities
-    Click    @{menuActivities}[2:3]
+    SikuliLibrary.Click    @{menuActivities}[2:3]
     ${menuLength}    Get Length    ${menuActivities}
     FOR    ${I}    IN    @{menuActivities}
         ${menuLength}    Evaluate    ${menuLength}-1
-        Click    ${I}
-        Click    buttonSelect
+        SikuliLibrary.Click    ${I}
+        SikuliLibrary.Click    buttonSelect
         Comment    Gate Crossing Do Not need buttonActivityEnd
         ${existsbuttonActivities}    Exists    buttonActivities    ${wait5}
         IF    ${existsbuttonActivities}
@@ -621,7 +657,7 @@ ExecuteActivities
         END
         ${existsButtonActivityEnd}    Exists    buttonActivityEnd    ${wait5}
         IF    ${existsButtonActivityEnd}
-            Click    buttonActivityEnd
+            SikuliLibrary.Click    buttonActivityEnd
             IF    ${menuLength}==0
                 BREAK
             END
@@ -634,18 +670,18 @@ ExecuteActivities
             WHILE    True    limit=6
                 ${existsheaderInspectionHistory}    Exists    headerInspectionHistory    ${wait5}
                 IF    ${existsheaderInspectionHistory}
-                    Click    buttonBack
+                    SikuliLibrary.Click    buttonBack
                     BREAK
                 END
             END
-    # \ \ \ \ \ \ \ Sleep \ \ \ ${one}
+    # \ \ \ \ \ \ \ BuiltIn.Sleep \ \ \ ${one}
             selectActivities
             CONTINUE
         END
         ${existsheaderActivityContainerDropOff}    Exists    headerActivityContainerDropOff    ${wait5}
         IF    ${existsheaderActivityContainerDropOff}
             Log    TBD-ActivityContainerDropOff
-            Click    buttonCancel
+            SikuliLibrary.Click    buttonCancel
             selectActivities
             CONTINUE
         END
@@ -656,8 +692,8 @@ ExecuteActivities
 
 MechanicalInspection
     Log    MechanicalInspection
-    Click    buttonPre-trip
-    Click    buttonPost-trip
+    SikuliLibrary.Click    buttonPre-trip
+    SikuliLibrary.Click    buttonPost-trip
     WHILE    True
         ${existsbuttonDone}    Exists    buttonDone    ${wait5}
         IF    ${existsbuttonDone}
@@ -665,9 +701,9 @@ MechanicalInspection
         END
     END
     WHILE    True
-        Set Min Similarity    0.85
+        Set Min Similarity    ${activityPrecision}
         ${existsiconRedDot}    Exists    iconRedDot    ${wait5}
-        Set Min Similarity    0.6
+        Set Min Similarity    ${regularPrecision}
         ${existsbuttonClearSignature}    Exists    buttonClearSignature    ${wait5}
         IF    ${existsbuttonClearSignature}
             BREAK
@@ -711,16 +747,16 @@ Signature
 
 Complete
     Log    Complete
-    Click    buttonComplete
+    SikuliLibrary.Click    buttonComplete
 
 singleScreen
     [Arguments]    ${countScreenNext}
     Log    singleScreen
     WHILE    True    # single screen
-    #Sleep    ${One}
+    #BuiltIn.Sleep    ${One}
         ${existsbuttonsPassFailInspection}    Exists    buttonsPassFailInspection    ${wait5}
         IF    ${existsbuttonsPassFailInspection}
-            Click    buttonsPassFailInspection    ${inspectionMarkX}
+            SikuliLibrary.Click    buttonsPassFailInspection    ${inspectionMarkX}
             ${countScreenNext}    Evaluate    ${countScreenNext}+1
     #Log    one check
         ELSE
@@ -743,34 +779,34 @@ singleScreenPaginator
         ${existsbuttonDown}    Exists    buttonDown    ${wait15}
         IF    ${existsbuttonDown}
     #x=input("buttonDown.png")
-            Click    buttonDown
+            SikuliLibrary.Click    buttonDown
             Log    next screen
-            Sleep    ${wait5}
+            BuiltIn.Sleep    ${wait5}
             ${existsbuttonsPassFailInspection}    Exists    buttonsPassFailInspection    ${wait15}
             IF    ${existsbuttonsPassFailInspection}
                 BREAK
             END
         END
     #
-        Log    TBD DEBUG click(inspectionArea.offset(120,0))    # next \ inspection area
-        Click    buttonDone    ${nextPageX}    ${nextPageY}
+        Log    TBD DEBUG SikuliLibrary.Click(inspectionArea.offset(120,0))    # next \ inspection area
+        SikuliLibrary.Click    buttonDone    ${nextPageX}    ${nextPageY}
         ${existsbuttonsPassFailInspection}    Exists    buttonsPassFailInspection    ${wait15}
         IF    ${existsbuttonsPassFailInspection}
             BREAK
         END
     #
-        Set Min Similarity    0.85
+        Set Min Similarity    ${activityPrecision}
         ${existsiconRedDot}    Exists    iconRedDot    ${wait5}
-        Set Min Similarity    0.6
+        Set Min Similarity    ${regularPrecision}
         IF    ${existsiconRedDot}
-            Click    iconRedDot
+            SikuliLibrary.Click    iconRedDot
             Log    tab exists
             ${countScreenNext}    Set Variable    ${one}
             BREAK
         END
         ${existsbuttonDone}    Exists    buttonDone    ${wait5}
         IF    ${existsbuttonDone}
-            Click    buttonDone
+            SikuliLibrary.Click    buttonDone
             ${countScreenNext}    Set Variable    ${LoadTime}
             BREAK
         END
@@ -781,7 +817,7 @@ singleScreenPaginator
 
 selectDisposal
         Wait For Image    buttonDisposal    \    ${wait15}
-        Click    buttonDisposal
+        SikuliLibrary.Click    buttonDisposal
 
 ExecuteDisposal
         Log    ExecuteDisposal
@@ -790,62 +826,85 @@ ExecuteDisposal
         IF    ${disposalTMP}==0
             ${disposalTMP}    Set Variable    1
         END
-        Wait For Image    buttonSelect    \    ${wait15}
-        Click    buttonSelect
+        WHILE    True
+        ${existsbuttonSelect}    Exists    buttonSelect
+            IF    ${existsbuttonSelect}
+                SikuliLibrary.Click    buttonSelect
+                BREAK
+            END
+        END
     #Disposal Screen
-        Click    buttonArrive
+    # \ \ \ \ \ \ \ ${existsbuttonArrive} \ \ \ Exists \ \ \ buttonArrive
+    # \ \ \ \ \ \ \ IF \ \ \ ${existsbuttonArrive}
+    # \ \ \ \ \ \ \ \ \ \ \ SikuliLibrary.Click \ \ \ buttonArrive
+    # \ \ \ \ \ \ \ END
     #
-        Click    labelTicket    ${disposalX}
-        clickKbd    ${disposalTMP}
-        Click    buttonKbdDone
+        ${existsdisposalWarningIcon}    Exists    disposalWarningIcon
+    # \ \ \ IF \ \ \ ${existsdisposalWarningIcon}
+            Log To Console    String test for Disposal
+    # \ \ \ # ELSE
+            Log To Console    Feel the ticket fields
+            SikuliLibrary.Click    labelTicket    ${disposalX}
+            clickKbd    ${disposalTMP}
+            SikuliLibrary.Click    buttonKbdDone
     #
-        Click    labelQuantity    ${disposalX}
-        clickKbd    ${disposalTMP}
-        Click    buttonKbdDone
+            SikuliLibrary.Click    labelQuantity    ${disposalX}
+            clickKbd    ${disposalTMP}
+            SikuliLibrary.Click    buttonKbdDone
+    # \ \ \ END
     # \ \ in KG removed, will continue work with metric tons
-    # \ \ \ Click \ \ \ labelQuantity \ \ \ ${kgX} \ \ \ ${kgY}
+    # \ \ \ SikuliLibrary.Click \ \ \ labelQuantity \ \ \ ${kgX} \ \ \ ${kgY}
     #
-        Click    buttonArrive    #Depart
+        Log To Console    Second Arrive Button
+        WHILE    True
+            Wait For Image    buttonArrive    \    ${wait10}
+            SikuliLibrary.Click    buttonArrive    #Depart button
     #Warning pop-up
-        Wait For Image    headerWarning    \    ${wait10}
-        Click    buttonBlueYes
+            ${existsheaderWarning}    Exists    headerWarning
+            IF    ${existsheaderWarning}
+                Wait For Image    headerWarning    \    ${wait15}
+                SikuliLibrary.Click    buttonBlueYes
+                BREAK
+            END
+        END
+    #SikuliLibrary.Click
 
 TBD-OLD-clickExecuteDLV
-    Comment    Click    Cart    ${completedX}    ${completedY}
+    Comment    SikuliLibrary.Click    Cart    ${completedX}    ${completedY}
         Wait For Image    headerDeliveryYellow    \    ${wait10}
-        Click    Cart    ${DLVDLVselectCartX}    ${DLVDLVselectCartY}
+        SikuliLibrary.Click    Cart    ${DLVDLVselectCartX}    ${DLVDLVselectCartY}
         Wait For Image    labelDLVpleaseSelectCart    \    ${wait10}
-        Click    Cart    ${DLVfirstCartX}    ${DLVfirstCartY}
+        SikuliLibrary.Click    Cart    ${DLVfirstCartX}    ${DLVfirstCartY}
         Wait For Image    buttonDLVarriveAtCustomer    \    ${wait10}
-        Click    Cart    ${DLVarriveAtCustomerX}    ${DLVarriveAtCustomerY}
+        SikuliLibrary.Click    Cart    ${DLVarriveAtCustomerX}    ${DLVarriveAtCustomerY}
         Wait For Image    labelDLVarrived    \    ${wait10}
-        Click    Cart    ${DLVstartServiceX}    ${DLVstartServiceY}
+        SikuliLibrary.Click    Cart    ${DLVstartServiceX}    ${DLVstartServiceY}
         Wait For Image    labelDLVstarted    \    ${wait10}
-        Click    Cart    ${DLVendServiceX}    ${DLVendServiceY}
+        SikuliLibrary.Click    Cart    ${DLVendServiceX}    ${DLVendServiceY}
         Wait For Image    labelDLVended    \    ${wait10}
-        Click    Cart    ${DLVdepartFromCustomerX}    ${DLVdepartFromCustomerY}
+        SikuliLibrary.Click    Cart    ${DLVdepartFromCustomerX}    ${DLVdepartFromCustomerY}
         Wait For Image    headerCallsWhite    \    ${wait15}
         selectManualConfirm
 
 clickExecuteDLV
-    Comment    Click    Cart    ${completedX}    ${completedY}
+    Comment    SikuliLibrary.Click    Cart    ${completedX}    ${completedY}
         Wait For Image    headerDeliveryYellow    \    ${wait10}
-    #Click    Cart    ${DLVDLVselectCartX}    ${DLVDLVselectCartY}
-        Click    buttonDLVselectCart
+    #SikuliLibrary.Click    Cart    ${DLVDLVselectCartX}    ${DLVDLVselectCartY}
+        SikuliLibrary.Click    buttonDLVselectCart
         Wait For Image    labelDLVpleaseSelectCart    \    ${wait10}
-        Click    labelDLVpleaseSelectCart    ${DLVabelFirstCartX}    ${DLVabelFirstCartY}
+        SikuliLibrary.Click    labelDLVpleaseSelectCart    ${DLVabelFirstCartX}    ${DLVabelFirstCartY}
         Wait For Image    buttonDLVarriveAtCustomer    \    ${wait10}
-    #Click    Cart    ${DLVarriveAtCustomerX}    ${DLVarriveAtCustomerY}
-        Click    buttonDLVarriveAtCustomer
+    #SikuliLibrary.Click    Cart    ${DLVarriveAtCustomerX}    ${DLVarriveAtCustomerY}
+        SikuliLibrary.Click    buttonDLVarriveAtCustomer
         Wait For Image    labelDLVarrived    \    ${wait10}
-    #Click    Cart    ${DLVstartServiceX}    ${DLVstartServiceY}
-        Click    buttonDLVstartService
+    #SikuliLibrary.Click    Cart    ${DLVstartServiceX}    ${DLVstartServiceY}
+        SikuliLibrary.Click    buttonDLVstartService
         Wait For Image    labelDLVstarted    \    ${wait10}
-    #Click    Cart    ${DLVendServiceX}    ${DLVendServiceY}
-        Click    buttonDLVendService
+    #SikuliLibrary.Click    Cart    ${DLVendServiceX}    ${DLVendServiceY}
+        SikuliLibrary.Click    buttonDLVendService
         Wait For Image    labelDLVended    \    ${wait10}
-    #Click    Cart    ${DLVdepartFromCustomerX}    ${DLVdepartFromCustomerY}
-        Click    buttonDLVdepartFromCustomer
+    #SikuliLibrary.Click    Cart    ${DLVdepartFromCustomerX}    ${DLVdepartFromCustomerY}
+        SikuliLibrary.Click    buttonDLVdepartFromCustomer
         Wait For Image    headerCallsWhite    \    ${wait15}
         selectManualConfirm
 
@@ -872,19 +931,19 @@ StopsException-OLDworks
     #
             IF    ${existslabelAUD-SIZE}==True
                 Log    AUDit
-                Click    Cart    ${completedX}    ${completedY}
+                SikuliLibrary.Click    Cart    ${completedX}    ${completedY}
                 Wait For Image    headerAuditingYellowOnBlue    \    ${wait20}
     # provide W-L-H
-                Click    Cart    ${WaudX}    ${WLHaudY}
+                SikuliLibrary.Click    Cart    ${WaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${LaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${LaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${HaudX}    ${WLHaudY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${HaudX}    ${WLHaudY}
                 clickKbd    ${exI}
-                Click    buttonKbdDone
-                Click    Cart    ${exceptionAUDX}    ${exceptionAUDY}
+                SikuliLibrary.Click    buttonKbdDone
+                SikuliLibrary.Click    Cart    ${exceptionAUDX}    ${exceptionAUDY}
                 Wait For Image    buttonExceptionCallNote    \    ${wait20}
                 clickException    ${exceptionTmpX}    ${exceptionTmpY}
                 CONTINUE
@@ -892,13 +951,13 @@ StopsException-OLDworks
     #
             BREAK
         END
-        Click    buttonBack
+        SikuliLibrary.Click    buttonBack
 
 clickExceptionOLDworks
     [Arguments]    ${exceptionTmpX}    ${exceptionTmpY}
-        Click    Cart    ${exceptionX}    ${exceptionY}
+        SikuliLibrary.Click    Cart    ${exceptionX}    ${exceptionY}
         Wait For Image    buttonExceptionCallNote    \    ${wait15}
-        Click    Cart    ${exceptionTmpX}    ${exceptionTmpY}
+        SikuliLibrary.Click    Cart    ${exceptionTmpX}    ${exceptionTmpY}
         WHILE    True
             ${existsbuttonExceptionCallNote}    Exists    buttonExceptionCallNote    ${wait5}
             IF    ${existsbuttonExceptionCallNote}
@@ -912,20 +971,20 @@ clickExceptionOLDworks
 clickEnvelope
     ${existlabelEnvelopeWhite}    Exists    labelEnvelopeWhite    ${wait5}
     IF    ${existlabelEnvelopeWhite}
-        Click    Cart    444    0
+        SikuliLibrary.Click    Cart    444    0
     END
 
 selectSequenceList
     Log    selectSequenceList
     Wait For Image    headerCallsWhite    \    ${wait15}
-    Click    Cart    -350    80
+    SikuliLibrary.Click    Cart    -350    80
 
 FinishMainMenu
-    Click    buttonSwitchDriverRoute
+    SikuliLibrary.Click    buttonSwitchDriverRoute
 
 UnknownAddress
     ${existsheaderUnknownAddress}    Exists    UnknownAddress    ${wait5}
-    Click    buttonBack
+    SikuliLibrary.Click    buttonBack
 
 splitTest
     ${rnd} =    Generate Random String    2    [NUMBERS]
@@ -951,17 +1010,16 @@ LogTestName
     Log    ${tName.WAworkflow}
 
 StopsExecute
-    #&{shallow_copy}=    Copy Dictionary    ${WAworkflow}    deepcopy=False
-    #${shiftX}=    Get From Dictionary    ${shallow_copy}    buttonRoffBbackX
     Log    ${TEST_NAME}
-    #${buttonBackShX}    Evaluate    ${buttonRoffBbackX.TEST_NAME}
-    #${buttonBackShX}    Evaluate    &{buttonRoffBbackX}[TEST_NAME]
-    Log Many    ${buttonBackShX}    Programmist Durak    ${buttonRoffBbackX.WAworkflow}
     WHILE    True
-    #Click    Cart    ${CartManualConfirmX}    ${CartManualConfirmY}
-    ${existsassignmentButtonOK}    Exists    assignmentButtonOK    ${wait10}
+        callVDS
+        ManualPhoto
+        ManualVideo
+        readWaWeight
+    #SikuliLibrary.Click    Cart    ${CartManualConfirmX}    ${CartManualConfirmY}
+        ${existsassignmentButtonOK}    Exists    assignmentButtonOK    ${wait10}
             IF    ${existsassignmentButtonOK}
-                Click    assignmentButtonOK
+                SikuliLibrary.Click    assignmentButtonOK
             END
             selectManualConfirm
             Wait For Image    headerCallsWhite    \    ${wait15}
@@ -973,11 +1031,10 @@ StopsExecute
             END
             ${existsbuttonBack}    Exists    buttonBack    ${wait15}
             IF    ${existsbuttonBack}
-                Click    buttonBack    ${buttonBackShX}    0    #Click right of button Back 100, 0
+                SikuliLibrary.Click    buttonBack    ${buttonBackShX}    0    #SikuliLibrary.Click right of button Back 100, 0
                 ${existstagWeightKG}    Exists    tagWeightKG    ${wait5}
                 IF    ${existstagWeightKG}
-                    feelWeightKG
-    #${keywordName}    Get From Dictionary    ${WAworkflow}    WeightKG
+                    fillWeightKG
     ${keywordName}=    Get From Dictionary    ${shallow_copy}    WeightKG
     #clickExecute
                     Run Keyword    ${keywordName}
@@ -1008,18 +1065,25 @@ StopsExecute
                 BREAK
             END
         END
-        Click    buttonBack
+        SikuliLibrary.Click    buttonBack
 
 clickNone
     No Operation
 
-feelWeightKG
-    Log    feelWeightKG
+fillWeightKG
+    Log    fillWeightKG
+    ${existsButton}    Exists    buttonScaleRandom
+    IF    ${existsButton}
+        SikuliLibrary.Click    buttonScaleRandom
+        Builtin.Sleep    ${wait2}
+        RETURN
+    END
     ${WeightKG}    Generate Random String    2    [NUMBERS]
-    Click    tagWeightKG
+    SikuliLibrary.Click    tagWeightKG
     Wait For Image    buttonKbdDone    \    ${wait15}
-    Click    buttonKbdDone
+    SikuliLibrary.Click    buttonKbdDone
     Paste text    \    ${WeightKG}
+    Builtin.Sleep    ${wait2}
 
 copyWADictionary
     &{shallow_copy}=    Copy Dictionary    ${WAworkflow}    deepcopy=False
@@ -1031,3 +1095,264 @@ copyNotOutDictionary
     &{shallow_copy}=    Copy Dictionary    ${NotOut}    deepcopy=False
     ${buttonBackShX}    Evaluate    ${buttonRoffBbackX.NotOut}
     Set Suite Variable    ${buttonBackShX}
+
+openLiftArm
+    sikuliClick    Cart    140    0
+    sikuliClick    tabVehicleData    0    0
+    sikuliClick    buttonBack    50    -120
+    sikuliClick    cellTruck674Dev    80    0
+    LiftArmUpDown
+
+sikuliClick
+    [Arguments]    ${Simage}    ${Sx}    ${Sy}
+    WHILE    True
+            ${existsImage}    Exists    ${Simage}
+        IF    ${existsImage}
+            SikuliLibrary.Click    ${Simage}    ${Sx}    ${Sy}
+            BREAK
+        END
+    END
+
+LiftArmUpDown
+    sikuliClick    labelGPI1    80    0
+    BuiltIn.sleep    ${wait5}
+    sikuliClick    labelGPI1    80    0
+
+sikuliClickIFexists
+    [Arguments]    ${Simage}    ${Sx}    ${Sy}
+    ${existsImage}    Exists    ${Simage}    ${wait10}
+    IF    ${existsImage}
+        SikuliLibrary.Click    ${Simage}    ${Sx}    ${Sy}
+    END
+
+callVDS
+    Change Screen Id    ${screenVDS}
+    SikuliLibrary.Click    SEQ    0    24
+    ${wheelMove}    Set Variable    0
+    BuiltIn.Sleep    ${wait2}
+    ${existsVDSempty}    Exists    VDSempty    ${wait2}
+    IF    ${existsVDSempty}
+        closeVDS
+        Change Screen Id    ${screenTrek}
+        RETURN
+    END
+    WHILE    True
+        ${existsVDSyellowTriangle}    Exists    VDSyellowTriangle    ${wait2}
+        ${existsVDSblueDot}    Exists    VDSblueDot    ${wait2}
+        Log Many    Triangle    ${existsVDSyellowTriangle}
+        IF    ${existsVDSyellowTriangle}
+            SikuliLibrary.Right Click    VDSyellowTriangle
+            SikuliLibrary.Click    VDSGoThere    ${wait2}
+            BREAK
+        END
+    ${existsVDStruck}    Exists    VDStruck    ${wait2}
+        Log Many    Dot    ${existsVDStruck}
+        IF    ${existsVDStruck}
+            SikuliLibrary.Right Click    VDStruck
+            SikuliLibrary.Click    VDSGoThere    ${wait2}
+            BREAK
+        END
+        # Emegrency Exit * Triangle or blue dot are not on the screen
+        SikuliLibrary.Right Click    headerVDS    130    180
+        SikuliLibrary.Click    VDSGoThere    ${wait2}
+        BREAK
+    END
+    #SikuliLibrary.Wheel Up    ${wheelMove}
+    speedZero
+    SikuliLibrary.Click    SEQ    0    24
+    SikuliLibrary.Click    buttonRemoveAssignment
+    Change Screen Id    ${screenTrek}
+
+speedZero
+    Change Screen Id    ${screenVDS}
+    #@{coordinates}=    Get Screen Coordinates
+    SikuliLibrary.Click    SEQ    -200    0
+    #IF    ${screenVDS}
+        ${lisst}    create list    1931    68    198    115
+    #ELSE
+    #${lisst}    create list    11    70    196    107
+    #END
+    ${tmpRegion}=    Click On Region    ${lisst}
+    #Highlight Region    ${lisst}    10
+    SikuliLibrary.Click    logoDeviceController    800    0    # to move cursor from read text area
+    Set Min Similarity    ${activityPrecision}    #set activity precision
+    WHILE    True
+        ${screenShotSpeed}=    SikuliLibrary.Capture Region    ${lisst}
+        Builtin.Sleep    ${wait15}
+        ${existsSpeed}=    Exists    ${screenShotSpeed}
+        IF    ${existsSpeed}
+            BREAK
+        ELSE
+            CONTINUE
+        END
+    END
+    Set Min Similarity    ${regularPrecision}    #restore old precision
+
+readWaWeight
+    #Change Screen Id    ${screenTrek}
+    #@{coordinates}=    Get Screen Coordinates
+    #SikuliLibrary.Click    Cart    100    0
+    # \ \ \ ${weightList} \ \ \ create list \ \ \ 640 \ \ \ 77 \ \ \ 140 \ \ \ 40
+    #${weightList}    create list    640    77    190    40
+    ${weightList}    create list    640    77    180    40
+    ${tmpRegion}=    Click Region    ${weightList}
+    #Highlight Region    ${weightList}    10
+    SikuliLibrary.Click    Cart    40    0    # to move cursor from read text area
+    ${tmpWeight}=    Read Text From Region    ${weightList}
+    ${tmpWeight}=    Fetch From Left    ${tmpWeight}    ${KG}
+    Log Many    >    ${tmpWeight}    <
+    ${lengthWeight}=    Get Length    ${tmpWeight}
+    IF    ${lengthWeight}
+    #Log to Console    LongString
+        ${instantWeight}=    Convert To Number    ${tmpWeight}
+    ELSE
+    #Log to Console    ShortString
+        ${instantWeight}=    Set Variable    9000
+    END
+    #${instantWeight}=    Convert To Integer    ${tmpWeight}
+    #Log Many    >    ${instantWeight}    <
+    IF    (${instantWeight}>=${maxWeight})
+        Log Many    Truck owerweighted    ${instantWeight}
+        owerloadDisposal
+    ELSE
+        Log Many    The weight    ${instantWeight}    is OK
+    END
+
+owerloadDisposal
+    ${existsButtonBack}    Exists    buttonBack    ${wait2}
+    IF    ${existsButtonBack}
+        SikuliLibrary.Click    buttonBack
+        selectDisposal
+        ExecuteDisposal
+        selectCalls
+    END
+
+wtf
+    WHILE    True
+        ${tmpText}=    Read Text From Region    ${lisst}
+    #Log to Console    ${tmpText}
+        ${resultSpeed}=    Fetch From Left    ${tmpText}    ${Kmh}
+    #Log to Console    ${resultSpeed}
+        ${instantSpeed}=    Convert To Number    ${resultSpeed}
+    #Log to Console    ${instantSpeed}
+    #Log to Console    some speed text
+    #${instantSpeed}    set variable    2.2
+        ${status}=    Evaluate    ${instantSpeed} > 0.0
+        IF    ${status}
+            Log Many    Super high speed    ${instantSpeed}
+        ELSE
+    #Log Many    Zero Speed    ${instantSpeed}
+            BREAK
+        END
+    END
+
+closeVDS
+    SikuliLibrary.Double Click    headerVDS    -50    0
+
+ManualPhoto
+    SikuliLibrary.Click    buttonManualPhoto
+
+ManualVideo
+    SikuliLibrary.Click    buttonManualVideo
+
+whatewer
+    Log To Console    Roi roks
+    Set ROI    ${lisst}    4
+    WHILE    True
+        ${tmpROI}=    Capture ROI
+        BuiltIn.Sleep    ${wait5}
+        ${exists}    Exists    ${tmpROI}
+        IF    ${exists}
+            Log To Console    Roi exists
+            BREAK
+        END
+        Log To Console    No Roi
+    END
+    #
+        ${existsVDSyellowANDblue}    Evaluate    ${existsVDSyellowTriangle} or ${existsVDSblueDot}
+        IF    ${existsVDSyellowANDblue}
+            No Operation
+        ELSE
+            SikuliLibrary.Click    headerVDS    0    100
+            SikuliLibrary.Wheel Down    1
+            ${wheelMove}    Evaluate    ${wheelMove} + 1
+            CONTINUE
+        END
+    #${existsVDSblueDot}    Exists    VDSblueDot    ${wait2}
+        Log Many    Dot    ${existsVDSblueDot}
+        IF    ${existsVDSblueDot}
+            SikuliLibrary.Right Click    VDSblueDot
+            SikuliLibrary.Click    VDSGoThere    ${wait2}
+            BREAK
+        END
+
+t19
+    SikuliLibrary.Right Click    headerVDS    130    180
+
+Aug11
+    SikuliLibrary.Change Screen Id    1
+    #@{speedBox}=    SikuliLibrary.Select Region    Select region
+    ${coordinatesRegion}=    Create List    1931    68    198    115
+    Log    ${coordinatesRegion}
+    SikuliLibrary.Highlight Region    ${coordinatesRegion}    10
+    #${weightList}    create list    640    77    180    40
+    ${tmpSpeed}=    Click Region    ${coordinatesRegion}
+    ${screenShotSpeed}=    SikuliLibrary.Capture Region    ${coordinatesRegion}
+    # \ | 1931 | 68 | 198 | 115 ]
+    SikuliLibrary.Highlight Region    ${coordinatesRegion}    10
+    BuiltIn.Sleep    10
+    Set Min Similarity    1
+    ${existsSpeed}=    Exists    ${screenShotSpeed}
+    SikuliLibrary.Click    ${screenShotSpeed}
+    Log    ${existsSpeed}
+
+speedZeroOLD
+    Change Screen Id    ${screenVDS}
+    @{coordinates}=    Get Screen Coordinates
+    SikuliLibrary.Click    SEQ    -200    0
+    IF    ${screenVDS}
+        ${lisst}    create list    1931    98    196    17
+    ELSE
+        ${lisst}    create list    11    70    196    107
+    END
+    ${tmpRegion}=    Click On Region    ${lisst}
+    #Highlight Region    ${lisst}    10
+    SikuliLibrary.Click    logoDeviceController    800    0    # to move cursor from read text area
+    WHILE    True
+        Builtin.Sleep    ${wait2}
+        ${tmpText}=    Read Text From Region    ${lisst}
+    Log to Console    ${tmpText}
+        ${resultSpeed}=    Fetch From Left    ${tmpText}    ${Kmh}
+        ${lengthSpeed}=    Get Length    ${resultSpeed}
+        Log    ${lengthSpeed}
+        Log    ${resultSpeed}
+        IF    ${lengthSpeed}
+    #Log to Console    LongString
+            ${instantSpeed}=    Convert To Number    ${resultSpeed}
+        ELSE
+    #Log to Console    ShortString
+            ${instantSpeed}=    Set Variable    0.0
+        END
+    #Log to Console    ${resultSpeed}
+    #${instantSpeed}=    Convert To Number    ${resultSpeed}
+    #Log to Console    ${instantSpeed}
+    #Log to Console    some speed text
+    #${instantSpeed}    set variable    2.2
+        ${status}=    Evaluate    ${instantSpeed} > 0.0
+        IF    ${status}
+            Log Many    Super high speed    ${instantSpeed}
+        ELSE
+    #Log Many    Zero Speed    ${instantSpeed}
+            BREAK
+        END
+    END
+
+Aug16
+    ${region}=    Get Extended Region From Image    Cart    right    5
+    #Highlight Region    ${region}    5
+    ${regionWeight}=    Get Extended Region From Region    ${region}    right    2
+    Highlight Region    ${regionWeight}    5
+    ${tmpText}=    Read Text From Region    ${regionWeight}
+    Log to Console    ${tmpText}
+    ${resultWeight}=    Fetch From Left    ${tmpText}    ${KG}
+    Log to Console    ${resultWeight}
