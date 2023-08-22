@@ -5,6 +5,7 @@ Library           SikuliLibrary
 Library           String
 Library           Collections
 Library           Screenshot
+Library           DateTime
 
 *** Variables ***
 ${LibraryAutoIt}    pyautogui
@@ -102,10 +103,32 @@ ${screenVDS}      1
 ${speedZero}      0.0
 ${Kmh}            Km/h
 ${maxWeight}      20000
+${truckWeight}    9000
+${disposalWeight}    \
+
 ${KG}             KG
+${k}              k
 ${highestPrecision}    1
 ${regularPrecision}    0.6
 ${activityPrecision}    0.85
+${LF}             \n
+${COLON}          :
+${ticketNumber}    1
+${MT}             \
+${unitKg}         Kg
+${ticketNumber}    \
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -148,7 +171,7 @@ WAworkflow
 Disposal
     StartRoute
     selectDisposal
-    ExecuteDisposal
+    ExecuteDisposal    ${disposalWeight}
 
 Extra
     StartRoute
@@ -190,7 +213,7 @@ ZcloseRoute
     closeRoute
 
 tmpTest
-    Aug16
+    ticketNumber
 
 ReadMesageRoutLess
     LogonDriver
@@ -549,7 +572,9 @@ clickKbd
         [Arguments]    ${kbdTMP}
         Wait For Image    buttonKbdDone    \    ${wait15}
         SikuliLibrary.Click    buttonKbdClear
-        IF    ${kbdTMP} == 1    SikuliLibrary.Click    buttonKbd1
+        ${tmpLenght}=    Get Length    ${kbdTMP}
+        IF    ${tmpLenght}==0    RETURN
+        IF    ${kbdTMP}==1    SikuliLibrary.Click    buttonKbd1
         IF    ${kbdTMP}==2    SikuliLibrary.Click    buttonKbd2
         IF    ${kbdTMP}==3    SikuliLibrary.Click    buttonKbd3
         IF    ${kbdTMP}==4    SikuliLibrary.Click    buttonKbd4
@@ -820,41 +845,50 @@ selectDisposal
         SikuliLibrary.Click    buttonDisposal
 
 ExecuteDisposal
-        Log    ExecuteDisposal
+        [Arguments]    ${disposalWeight}
+        Log Many    ExecuteDisposal    ${disposalWeight}
         ${disposalTMP}    Evaluate    ${disposalTMP}+1
         ${disposalTMP}    Evaluate    ${disposalTMP} % 10
         IF    ${disposalTMP}==0
             ${disposalTMP}    Set Variable    1
         END
-        WHILE    True
+    WHILE    True
+        ${existscityOfClovisLandfill}    Exists    cityOfClovisLandfill
+        IF    ${existscityOfClovisLandfill}
+                SikuliLibrary.Click    cityOfClovisLandfill
+        END
+        ${existsvillaYard}    Exists    villaYard
+        IF    ${existsvillaYard}
+                SikuliLibrary.Click    villaYard
+        END
         ${existsbuttonSelect}    Exists    buttonSelect
             IF    ${existsbuttonSelect}
                 SikuliLibrary.Click    buttonSelect
                 BREAK
             END
-        END
-    #Disposal Screen
-    # \ \ \ \ \ \ \ ${existsbuttonArrive} \ \ \ Exists \ \ \ buttonArrive
-    # \ \ \ \ \ \ \ IF \ \ \ ${existsbuttonArrive}
-    # \ \ \ \ \ \ \ \ \ \ \ SikuliLibrary.Click \ \ \ buttonArrive
-    # \ \ \ \ \ \ \ END
+    END
+    Log To Console    String test for Disposal
+    Log To Console    Fill the ticket fields
+    ${ticketNumberTMP}=    Generate Random String    4    [NUMBERS]
+    ${ticketNumber}=    Replace String    ${ticketNumberTMP}     0    ${EMPTY}    1
+    #ticketNumber
+    Log To Console    ${ticketNumber}
+    SikuliLibrary.Click    labelTicket    ${disposalX}
+    SikuliLibrary.Click    buttonKbdDone
+    SikuliLibrary.Paste Text    labelTicket    ${ticketNumber}
+    #disposalWeight
     #
-        ${existsdisposalWarningIcon}    Exists    disposalWarningIcon
-    # \ \ \ IF \ \ \ ${existsdisposalWarningIcon}
-            Log To Console    String test for Disposal
-    # \ \ \ # ELSE
-            Log To Console    Feel the ticket fields
-            SikuliLibrary.Click    labelTicket    ${disposalX}
-            clickKbd    ${disposalTMP}
-            SikuliLibrary.Click    buttonKbdDone
+    #bandAid !!!! can't do ${disposalWeight} replacing it with a ${ticketNumber} !!!
+    ${disposalWeight}=    Evaluate    ${ticketNumber}
     #
-            SikuliLibrary.Click    labelQuantity    ${disposalX}
-            clickKbd    ${disposalTMP}
-            SikuliLibrary.Click    buttonKbdDone
-    # \ \ \ END
-    # \ \ in KG removed, will continue work with metric tons
-    # \ \ \ SikuliLibrary.Click \ \ \ labelQuantity \ \ \ ${kgX} \ \ \ ${kgY}
+    Log To Console    ${disposalWeight}
+    SikuliLibrary.Click    labelQuantity    ${disposalX}
+    SikuliLibrary.Click    buttonKbdDone
+    SikuliLibrary.Paste Text    labelQuantity    ${disposalWeight}
     #
+    BuiltIn.Sleep    ${wait5}
+    #weightUnitKg
+    SikuliLibrary.Click    ${unitKg}
         Log To Console    Second Arrive Button
         WHILE    True
             Wait For Image    buttonArrive    \    ${wait10}
@@ -867,7 +901,6 @@ ExecuteDisposal
                 BREAK
             END
         END
-    #SikuliLibrary.Click
 
 TBD-OLD-clickExecuteDLV
     Comment    SikuliLibrary.Click    Cart    ${completedX}    ${completedY}
@@ -1015,7 +1048,9 @@ StopsExecute
         callVDS
         ManualPhoto
         ManualVideo
-        readWaWeight
+        ${disposalWeight}=    readWaWeight
+        Log Many    disposalWeight-disposalWeight    ${disposalWeight}
+    #readWaWeight
     #SikuliLibrary.Click    Cart    ${CartManualConfirmX}    ${CartManualConfirmY}
         ${existsassignmentButtonOK}    Exists    assignmentButtonOK    ${wait10}
             IF    ${existsassignmentButtonOK}
@@ -1153,17 +1188,19 @@ callVDS
             BREAK
         END
         # Emegrency Exit * Triangle or blue dot are not on the screen
-        SikuliLibrary.Right Click    headerVDS    130    180
+    # \ \ \ \ \ \ \ SikuliLibrary.Right Click \ \ \ headerVDS \ \ \ 130 \ \ \ 180
+        SikuliLibrary.Right Click    VDSzeroSpeed    150    0
         SikuliLibrary.Click    VDSGoThere    ${wait2}
         BREAK
     END
     #SikuliLibrary.Wheel Up    ${wheelMove}
-    speedZero
+    #speedZeroNew
+    readSpeed
     SikuliLibrary.Click    SEQ    0    24
     SikuliLibrary.Click    buttonRemoveAssignment
     Change Screen Id    ${screenTrek}
 
-speedZero
+speedZeroNew
     Change Screen Id    ${screenVDS}
     #@{coordinates}=    Get Screen Coordinates
     SikuliLibrary.Click    SEQ    -200    0
@@ -1188,7 +1225,7 @@ speedZero
     END
     Set Min Similarity    ${regularPrecision}    #restore old precision
 
-readWaWeight
+readWaWeightOLD
     #Change Screen Id    ${screenTrek}
     #@{coordinates}=    Get Screen Coordinates
     #SikuliLibrary.Click    Cart    100    0
@@ -1223,7 +1260,7 @@ owerloadDisposal
     IF    ${existsButtonBack}
         SikuliLibrary.Click    buttonBack
         selectDisposal
-        ExecuteDisposal
+        ExecuteDisposal    ${disposalWeight}
         selectCalls
     END
 
@@ -1347,12 +1384,87 @@ speedZeroOLD
         END
     END
 
-Aug16
+readWaWeight
+    Set Global Variable    ${disposalWeight}
     ${region}=    Get Extended Region From Image    Cart    right    5
-    #Highlight Region    ${region}    5
+    #Highlight Region    ${region}    1
     ${regionWeight}=    Get Extended Region From Region    ${region}    right    2
-    Highlight Region    ${regionWeight}    5
+    #Highlight Region    ${regionWeight}    1
     ${tmpText}=    Read Text From Region    ${regionWeight}
-    Log to Console    ${tmpText}
+    #Log to Console    ${tmpText}
     ${resultWeight}=    Fetch From Left    ${tmpText}    ${KG}
-    Log to Console    ${resultWeight}
+    ${resultWeight}=    Fetch From Left    ${resultWeight}    ${k}
+    ${resultWeight}=    Fetch From Left    ${resultWeight}    ${SPACE}
+    #Log to Console    ${resultWeight}
+    IF    (${resultWeight}>=${maxWeight})
+    #Log Many    Truck owerweighted    ${instantWeight}
+        ${disposalWeight}=    Evaluate    ${resultWeight}-${maxWeight}
+        owerloadDisposal
+    # \ \ \ ELSE
+    # \ \ \ \ \ \ \ Log Many \ \ \ The weight \ \ \ ${instantWeight} \ \ \ is OK
+    END
+    Log Many    disposalWeight atreadwaweight    ${disposalWeight}
+    RETURN    ${disposalWeight}
+
+speedZero
+    Change Screen Id    ${screenVDS}
+    #@{coordinates}=    Get Screen Coordinates
+    SikuliLibrary.Click    SEQ    -200    0
+    #IF    ${screenVDS}
+        ${lisst}    create list    1931    68    198    115
+    #ELSE
+    #${lisst}    create list    11    70    196    107
+    #END
+    ${tmpRegion}=    Click On Region    ${lisst}
+    #Highlight Region    ${lisst}    10
+    SikuliLibrary.Click    logoDeviceController    800    0    # to move cursor from read text area
+    Set Min Similarity    ${activityPrecision}    #set activity precision
+    WHILE    True
+        ${screenShotSpeed}=    SikuliLibrary.Capture Region    ${lisst}
+        Builtin.Sleep    ${wait15}
+        ${existsSpeed}=    Exists    ${screenShotSpeed}
+        IF    ${existsSpeed}
+            BREAK
+        ELSE
+            CONTINUE
+        END
+    END
+    Set Min Similarity    ${regularPrecision}    #restore old precision
+
+readSpeed
+    ${region}=    Get Extended Region From Image    logoDeviceController    right    5
+    #Highlight Region    ${region}    1
+    ${regionSpeed}=    Get Extended Region From Region    ${region}    below    2
+    #Highlight Region    ${regionSpeed}    1
+    WHILE    True
+    ${tmpText}=    Read Text From Region    ${regionSpeed}
+    Log to Console    ${tmpText}
+    ${resultSpeed}=    Fetch From Left    ${tmpText}    ${Kmh}
+    ${resultSpeed}=    Fetch From Right    ${resultSpeed}    ${LF}
+    Log to Console    ${resultSpeed}
+    ${lenSpeed}=    Get Length    ${resultSpeed}
+    Log to Console    ${resultSpeed}
+    IF    ${lenSpeed}>6
+        CONTINUE
+    END
+    ${resultSpeedNum}=    Convert To Number    ${resultSpeed}
+    Log Many    ${resultSpeedNum}
+    #RETURN
+    ${tmp}=    Evaluate    (${resultSpeedNum}>=${activityPrecision} )
+    IF    (${resultSpeedNum}>=${activityPrecision} )
+    #IF    ${tmp}
+    Log Many    Truck moves    ${resultSpeedNum}
+    ELSE
+    Log Many    Truck stopped    ${resultSpeedNum}
+    BREAK
+    END
+    END
+
+ticketNumber
+    ${time}=    Get Time
+    #Log Many    ${time}
+    ${resultime}=    Fetch From Right    ${time}    ${SPACE}
+    ${lenTime}=    Get Length    ${resultime}
+    ${ticketNumber}=    Remove String    ${resultime}    ${COLON}
+    #Log Many    ${resultime}    ${lenTime}    ${ticketNumber}
+    RETURN    ${ticketNumber}
